@@ -1,0 +1,9 @@
+## Title: FKPManager
+## Version: 1.0
+## Author: zachl
+## Interface: 80205
+
+Globals.lua
+Logging.lua
+Frame.xml
+Frame.lua

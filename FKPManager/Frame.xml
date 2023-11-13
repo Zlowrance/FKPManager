@@ -1,0 +1,50 @@
+<Ui xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="Frame.lua" />
+	<Frame name="Frame1" inherits="BackdropTemplate" parent="UIParent" toplevel="true" enableMouse="true">
+		<Size x="414" y="320" />
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" keyType="string" type="global" />
+		</KeyValues>
+		<Layers>
+			<Layer>
+				<Texture name="ItemIcon">
+					<Size x="64" y="64" />
+					<Anchors>
+						<Anchor x="23" y="-234" point="TOPLEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="TestFont" inherits="GameFontNormal" text="FKP MANAGER">
+					<Size x="200" y="20" />
+					<Anchors>
+						<Anchor y="-25" point="TOP" />
+					</Anchors>
+				</FontString>
+				<FontString name="ItemName" inherits="GameFontNormal" text="{item name}" justifyH="LEFT">
+					<Size x="200" y="20" />
+					<Anchors>
+						<Anchor x="-14" y="-278" point="TOP" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ScrollFrame name="ScrollFrame1" inherits="UIPanelScrollFrameTemplate" clipChildren="true">
+				<Size x="200" y="200" />
+				<Anchors>
+					<Anchor y="-50" point="TOP" />
+				</Anchors>
+			</ScrollFrame>
+			<Button name="CloseButton" inherits="UIPanelCloseButton">
+				<Size x="30" y="30" />
+				<Anchors>
+					<Anchor x="-5" y="-5" point="TOPRIGHT" />
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>
