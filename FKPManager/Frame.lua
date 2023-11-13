@@ -1,6 +1,54 @@
 
 
 local parentFrame = _G["Frame1"]
+local bids = {}
+
+parentFrame:RegisterEvent(CHAT_TYPE)
+
+-- setup scroller content
+local scrollFrame = _G["ScrollFrame1"]
+
+local contentParent = CreateFrame("Frame")
+local scrollWidth = scrollFrame:GetWidth()
+scrollFrame:SetScrollChild(contentParent)
+contentParent:SetWidth(scrollWidth)
+contentParent:SetHeight(1)
+
+local function InitBidderList() 
+    local buttonHeight = 30
+    local index = 0
+    for name, _ in pairs(bids) do
+        local button = CreateFrame("Button", name, contentParent, "UIPanelButtonTemplate")
+        button:SetSize(scrollWidth - 5, buttonHeight) -- Set the size of the button
+        button:SetPoint("TOP", 0, -buttonHeight * (index)) -- Position the button
+
+        local topEnd = 100 - (math.min(index,5) * 10)
+
+        button:SetText(name .. " | Roll 1 - " .. topEnd) -- Set button text
+
+        -- Set up an OnClick script for the button
+        button:SetScript("OnClick", function()
+            Log("Rolled " .. math.random(1,topEnd))
+        end)
+        index = index + 1
+    end
+end
+
+parentFrame:SetScript("OnEvent", function(self, event, ...)
+    if event == CHAT_TYPE then
+        local message, playerName = ...
+
+        if not string.match(message, "%f[%a]bid%f[%A]") then
+            return
+        end
+        playerName = GetCharacterName(playerName)
+        if not bids[playerName] then
+            bids[playerName] = true
+            print(playerName .. " added to the bid list.")
+            InitBidderList() 
+        end
+    end
+end)
 
 local function OnCloseButtonClicked(self, button, down)
     parentFrame:Hide()
@@ -9,29 +57,7 @@ end
 local closeButton = _G["CloseButton"]
 closeButton:SetScript("OnClick", OnCloseButtonClicked);
 
--- Assuming 'MyScrollFrame' is your scroll frame's name
-local scrollFrame = _G["ScrollFrame1"]
--- The height of each button
-local buttonHeight = 30
-
-local contentParent = CreateFrame("Frame")
-scrollFrame:SetScrollChild(contentParent)
-contentParent:SetWidth(scrollFrame:GetWidth())
-contentParent:SetHeight(1)
-
--- Create and set up 20 buttons
-for i = 1, 20 do
-    local button = CreateFrame("Button", "MyButton" .. i, contentParent, "UIPanelButtonTemplate")
-    button:SetSize(100, buttonHeight) -- Set the size of the button
-    button:SetPoint("TOP", 0, -buttonHeight * (i - 1)) -- Position the button
-
-    button:SetText("Button " .. i) -- Set button text
-
-    -- Set up an OnClick script for the button
-    button:SetScript("OnClick", function()
-        Log("Button " .. i .. " clicked!")
-    end)
-end
+InitBidderList()
 
 local itemTexture = _G["ItemIcon"]
 local itemNameFontString = _G["ItemName"]
