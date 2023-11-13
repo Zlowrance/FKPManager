@@ -13,7 +13,7 @@ LUA_FILE="FKPData.lua"
 curl -L "$SHEET_URL" -o "$CSV_FILE"
 
 # Preprocess the CSV: Remove all \n and \r characters
-# Process the first 5 lines
+# Process the first 3 lines HACKY: This is to skip the random \n in some of the column headers, so if those change then this could break
 head -n 3 "$CSV_FILE" | tr -d '\r\n' > tmp.csv
 
 # Append the rest of the file as is

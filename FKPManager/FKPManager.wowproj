@@ -10,6 +10,10 @@
     <OutputPath>.</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="download_fkp.sh" />
+    <Content Include="FKPData.lua">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="FKPManager.toc">
       <SubType>TableOfContents</SubType>
     </Content>
