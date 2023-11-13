@@ -3,20 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # WowAddOnStudio Solution File, Format Version 11.00
 VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{E6E1D386-69D8-4755-9E61-0950293915FC}") = "FKPManager", "FKPManager\FKPManager.wowproj", "{EB998756-44C0-4860-BE8A-897B394B7BB3}"
+Project("{E6E1D386-69D8-4755-9E61-0950293915FC}") = "FKPManager", "FKPManager.wowproj", "{6F41EE5D-7014-4389-9AFA-5B7F7459E919}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Default|Any CPU = Default|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EB998756-44C0-4860-BE8A-897B394B7BB3}.Default|Any CPU.ActiveCfg = Default|Any CPU
-		{EB998756-44C0-4860-BE8A-897B394B7BB3}.Default|Any CPU.Build.0 = Default|Any CPU
+		{6F41EE5D-7014-4389-9AFA-5B7F7459E919}.Default|Any CPU.ActiveCfg = Default|Any CPU
+		{6F41EE5D-7014-4389-9AFA-5B7F7459E919}.Default|Any CPU.Build.0 = Default|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {1538933F-3EE0-4FA8-A4C2-4EA15EFDB1EB}
+		SolutionGuid = {D8E4053C-99D6-4298-A4A5-CEAA53B1CE80}
 	EndGlobalSection
 EndGlobal

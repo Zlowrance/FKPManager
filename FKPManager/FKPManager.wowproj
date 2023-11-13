@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Default</Configuration>
     <Name>FKPManager</Name>
-    <ProjectGuid>eb998756-44c0-4860-be8a-897b394b7bb3</ProjectGuid>
+    <ProjectGuid>6f41ee5d-7014-4389-9afa-5b7f7459e919</ProjectGuid>
     <AssemblyName>FKPManager</AssemblyName>
     <RootNamespace>FKPManager</RootNamespace>
   </PropertyGroup>
