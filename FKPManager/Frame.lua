@@ -1,16 +1,44 @@
-
-
-local parentFrame = _G["Frame1"]
 local bids = {}
 
-parentFrame:RegisterEvent(CHAT_TYPE)
+Container:RegisterEvent(CHAT_TYPE)
+Container:SetMovable(true)
+Container:EnableMouse(true)
+Container:RegisterForDrag("LeftButton")
+Container:SetScript("OnMouseDown", function(self)
+    self:StartMoving()
+end)
+Container:SetScript("OnMouseUp", function(self)
+    self:StopMovingOrSizing()
+end)
+
+local function GetTopEndRoll(index)
+     return 100 - (math.min(index,5) * 10)
+end
+
+EndBiddingButton:SetScript("OnClick", function(self, button, down)
+    SendToRaid(" BIDDERS ")
+    SendToRaid("=========")
+
+    -- separate these so players get their whisper after the raid dump
+	local index = 0
+    for name, _ in pairs(bids) do
+        local topEnd = GetTopEndRoll(index)
+        SendToRaid("1-" .. topEnd .. "  " .. name)
+        index = index + 1
+    end
+
+    index = 0
+    for name, _ in pairs(bids) do
+        local topEnd = GetTopEndRoll(index)
+        SendToPlayer("roll 1-" .. topEnd, name)
+        index = index + 1
+    end
+end)
 
 -- setup scroller content
-local scrollFrame = _G["ScrollFrame1"]
-
 local contentParent = CreateFrame("Frame")
-local scrollWidth = scrollFrame:GetWidth()
-scrollFrame:SetScrollChild(contentParent)
+local scrollWidth = ScrollFrame1:GetWidth()
+ScrollFrame1:SetScrollChild(contentParent)
 contentParent:SetWidth(scrollWidth)
 contentParent:SetHeight(1)
 
@@ -22,9 +50,9 @@ local function InitBidderList()
         button:SetSize(scrollWidth - 5, buttonHeight) -- Set the size of the button
         button:SetPoint("TOP", 0, -buttonHeight * (index)) -- Position the button
 
-        local topEnd = 100 - (math.min(index,5) * 10)
+        local topEnd = GetTopEndRoll(index)
 
-        button:SetText(name .. " | Roll 1 - " .. topEnd) -- Set button text
+        button:SetText(name) -- Set button text
 
         -- Set up an OnClick script for the button
         button:SetScript("OnClick", function()
@@ -34,7 +62,7 @@ local function InitBidderList()
     end
 end
 
-parentFrame:SetScript("OnEvent", function(self, event, ...)
+Container:SetScript("OnEvent", function(self, event, ...)
     if event == CHAT_TYPE then
         local message, playerName = ...
 
@@ -49,13 +77,6 @@ parentFrame:SetScript("OnEvent", function(self, event, ...)
         end
     end
 end)
-
-local function OnCloseButtonClicked(self, button, down)
-    parentFrame:Hide()
-end
-
-local closeButton = _G["CloseButton"]
-closeButton:SetScript("OnClick", OnCloseButtonClicked);
 
 InitBidderList()
 
@@ -88,7 +109,7 @@ end
 
 hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", function(self, button)
     Log("clicked bags button: " .. button)
-    if not parentFrame:IsVisible() then
+    if not Container:IsVisible() then
         Log("frame not visible, exiting")
         return
     end
@@ -109,12 +130,12 @@ end)
 SLASH_FKP1 = "/fkp"
 
 SlashCmdList["FKP"] = function(msg)
-    if parentFrame:IsVisible() then
-        parentFrame:Hide()
+    if Container:IsVisible() then
+        Container:Hide()
     else
-        parentFrame:Show()
+        Container:Show()
     end
     Log('slash command triggered')
 end
 
-parentFrame:Hide()
+Container:Hide()

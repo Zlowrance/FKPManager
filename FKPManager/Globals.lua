@@ -13,3 +13,14 @@ function GetCharacterName(fullName)
         return fullName
     end
 end
+
+function SendToPlayer(message, playerName)
+    -- message: The whisper message you want to send
+    -- playerName: The recipient's character name
+    SendChatMessage(message, "WHISPER", nil, playerName)
+end
+
+function SendToRaid(message)
+    -- message: The message you want to send to raid
+    SendChatMessage(message, "SAY")
+end

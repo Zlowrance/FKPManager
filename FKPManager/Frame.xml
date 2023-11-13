@@ -1,9 +1,9 @@
 <Ui xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="Frame.lua" />
-	<Frame name="Frame1" inherits="BackdropTemplate" parent="UIParent" toplevel="true" enableMouse="true">
-		<Size x="414" y="320" />
+	<Frame name="Container" inherits="BackdropTemplate" parent="UIParent" toplevel="true" enableMouse="true" clampedToScreen="true">
+		<Size x="414" y="430" />
 		<Anchors>
-			<Anchor point="CENTER" />
+			<Anchor y="-55" point="CENTER" />
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" keyType="string" type="global" />
@@ -13,36 +13,36 @@
 				<Texture name="ItemIcon">
 					<Size x="64" y="64" />
 					<Anchors>
-						<Anchor x="23" y="-234" point="TOPLEFT" />
+						<Anchor x="31" y="-32" point="TOPLEFT" />
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="TestFont" inherits="GameFontNormal" text="FKP MANAGER">
-					<Size x="200" y="20" />
-					<Anchors>
-						<Anchor y="-25" point="TOP" />
-					</Anchors>
-				</FontString>
 				<FontString name="ItemName" inherits="GameFontNormal" text="{item name}" justifyH="LEFT">
 					<Size x="200" y="20" />
 					<Anchors>
-						<Anchor x="-14" y="-278" point="TOP" />
+						<Anchor y="-53" point="TOP" />
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<ScrollFrame name="ScrollFrame1" inherits="UIPanelScrollFrameTemplate" clipChildren="true">
-				<Size x="200" y="200" />
+				<Size x="200" y="224" />
 				<Anchors>
-					<Anchor y="-50" point="TOP" />
+					<Anchor y="-123" point="TOP" />
 				</Anchors>
 			</ScrollFrame>
 			<Button name="CloseButton" inherits="UIPanelCloseButton">
 				<Size x="30" y="30" />
 				<Anchors>
 					<Anchor x="-5" y="-5" point="TOPRIGHT" />
+				</Anchors>
+			</Button>
+			<Button name="EndBiddingButton" inherits="UIPanelButtonTemplate" text="End Bidding">
+				<Size x="91" y="32" />
+				<Anchors>
+					<Anchor y="25" point="BOTTOM" />
 				</Anchors>
 			</Button>
 		</Frames>
