@@ -1,6 +1,6 @@
 <Ui xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="FKPDialog.lua" />
-	<Frame name="Container" parent="UIParent" toplevel="true" enableMouse="true" clampedToScreen="true">
+	<Frame name="FKPDialog" hidden="true" parent="UIParent" toplevel="true" enableMouse="true" clampedToScreen="true">
 		<Size x="400" y="600" />
 		<Anchors>
 			<Anchor y="-56" point="CENTER" />

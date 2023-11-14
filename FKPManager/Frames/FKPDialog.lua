@@ -2,16 +2,10 @@ local bids = {}
 
 -- INITIALIZATION
 
-Container:RegisterEvent(CHAT_EVENT_TYPE)
-Container:SetMovable(true)
-Container:EnableMouse(true)
-Container:RegisterForDrag("LeftButton")
-Container:SetScript("OnMouseDown", function(self)
-    self:StartMoving()
-end)
-Container:SetScript("OnMouseUp", function(self)
-    self:StopMovingOrSizing()
-end)
+FKPDialog:RegisterEvent(CHAT_EVENT_TYPE)
+FKPDialog:SetMovable(true)
+FKPDialog:EnableMouse(true)
+FKPDialog:RegisterForDrag("LeftButton")
 
 local contentParent = CreateFrame("Frame")
 local scrollWidth = ScrollFrame1:GetWidth()
@@ -19,8 +13,15 @@ ScrollFrame1:SetScrollChild(contentParent)
 contentParent:SetWidth(scrollWidth)
 contentParent:SetHeight(1)
 
-Container:Hide()
 BiddingButton:Disable()
+
+local dropTargetFrame = CreateFrame("Frame", "ItemDropTargetFrame", FKPDialog)
+dropTargetFrame:SetSize(100, 100) 
+dropTargetFrame:SetPoint("TOPLEFT", ItemIcon, "TOPLEFT")
+dropTargetFrame:SetPoint("BOTTOMRIGHT", ItemIcon, "BOTTOMRIGHT")
+FKPDialog:EnableMouse(true)
+FKPDialog:RegisterForDrag("LeftButton")
+dropTargetFrame:SetFrameStrata("HIGH")
 
 -- LOCAL FUNCTIONS
 
@@ -40,14 +41,6 @@ local function UpdateItemDisplay(itemId)
     BiddingButton:Enable()
 end
 
-dropTarget:SetScript("OnReceiveDrag", function(self)
-    local cursorType, itemId, itemLink = GetCursorInfo()
-    if cursorType == "item" then
-        UpdateItemDisplay(itemId)
-        ClearCursor()
-    end
-end)
-
 local function ClearItemDisplay()
     ItemIcon:SetTexture(nil)
     ItemName:SetText("")
@@ -63,9 +56,27 @@ local function GetFKP(playerName)
     return fkp
 end
 
+local function AddBid(playerName)
+    playerName = ToUnqualifiedCharacterName(playerName)
+    if bids[playerName] ~= nil then
+        return
+    end
+    bids[playerName] = GetFKP(playerName)
+    Log(playerName .. " added to the bid list.")
+end
+
+local function RemoveBid(playerName)
+    playerName = ToUnqualifiedCharacterName(playerName)
+    if bids[playerName] == nil then
+        return
+    end
+    bids[playerName] = nil
+    Log(playerName .. " removed from the bid list.")
+end
+
 local function InitBidderList()
     local buttonHeight = 80
-    local index = 0
+    
     local sortedBids = {}
     for name, fkp in pairs(bids) do
         table.insert(sortedBids, {name = name, fkp = fkp})
@@ -73,21 +84,32 @@ local function InitBidderList()
     -- Sort the array by value in descending order
     table.sort(sortedBids, function(a, b) return a.fkp > b.fkp end)
 
-    ClearFrame(contentParent)
+    local existingFrames = {contentParent:GetChildren()}
 
+    local index = 1
     for _, bid in ipairs(sortedBids) do
+        local buttonName = "Button" .. index
+        local button
+        if index <= #existingFrames then
+            -- Reuse existing button
+            button = existingFrames[index]
+        else
+            -- Create new button
+            button = CreateFrame("Frame", buttonName, contentParent, "FKPListTemplate")
+            button:SetSize(scrollWidth - 5, buttonHeight)
+            local yOffset = -buttonHeight * (index - 1)
+            button:SetPoint("TOP", contentParent, "TOP", 0, yOffset)
+            existingFrames[index] = button
+        end
         Log(bid.name .. bid.fkp)
-        local button = CreateFrame("Frame", bid.name, contentParent, "FKPListTemplate")
-        button:SetSize(scrollWidth - 5, buttonHeight) -- Set the size of the button
-        button:SetPoint("TOP", 0, -buttonHeight * (index)) -- Position the button
 
-        local playerPortrait = _G[bid.name .. "Portrait"]
-        local playerName = _G[bid.name .. "Name"]
-        local playerFKP = _G[bid.name .. "FKP"]
-        local playerRoll = _G[bid.name .. "Roll"]
-        local removeButton = _G[bid.name .. "RemoveButton"]
+        local playerPortrait = _G[buttonName .. "Portrait"]
+        local playerName = _G[buttonName .. "Name"]
+        local playerFKP = _G[buttonName .. "FKP"]
+        local playerRoll = _G[buttonName .. "Roll"]
+        local removeButton = _G[buttonName .. "RemoveButton"]
 
-        local topEnd = GetTopEndRoll(index)
+        local topEnd = GetTopEndRoll(index - 1)
         playerName:SetText(bid.name)
         playerFKP:SetText(bid.fkp)
         playerRoll:SetText("rolls 1-" .. topEnd)
@@ -99,30 +121,14 @@ local function InitBidderList()
 
         removeButton:SetScript("OnClick", function(self, button, down)
             RemoveBid(bid.name)
+            InitBidderList()
         end)
-
         index = index + 1
     end
-end
-
-local function AddBid(playerName)
-    playerName = ToUnqualifiedCharacterName(playerName)
-    if bids[playerName] ~= nil then
-        return
+    -- hide remaining frames if there are any
+    for i = index, #existingFrames do
+        existingFrames[i]:Hide()
     end
-    bids[playerName] = GetFKP(playerName)
-    Log(playerName .. " added to the bid list.")
-    InitBidderList()
-end
-
-local function RemoveBid(playerName)
-    playerName = ToUnqualifiedCharacterName(playerName)
-    if bids[playerName] == nil then
-        return
-    end
-    bids[playerName] = nil
-    Log(playerName .. " removed from the bid list.")
-    InitBidderList()
 end
 
 -- BUTTON HANDLERS
@@ -151,7 +157,7 @@ BiddingButton:SetScript("OnClick", function(self, button, down)
     end
 end)
 
-Container:SetScript("OnEvent", function(self, event, ...)
+FKPDialog:SetScript("OnEvent", function(self, event, ...)
     if event == CHAT_EVENT_TYPE then
         local message, playerName = ...
 
@@ -160,27 +166,39 @@ Container:SetScript("OnEvent", function(self, event, ...)
                 local testBidName = string.match(message, "testbid (%a+)")
                 if testBidName then
                     AddBid(testBidName)
+                    InitBidderList()
 	            end
             end
             return
         end
         AddBid(playerName)
+        InitBidderList()
     end
 end)
 
-Container:SetScript("OnShow", function(self)
+FKPDialog:SetScript("OnShow", function(self)
     InitBidderList()
 end)
 
--- SLASH COMMANDS
+FKPDialog:SetScript("OnMouseDown", function(self)
+    self:StartMoving()
+end)
 
-SLASH_FKP1 = "/fkp"
+FKPDialog:SetScript("OnMouseUp", function(self)
+    self:StopMovingOrSizing()
+end)
 
-SlashCmdList["FKP"] = function(msg)
-    if Container:IsVisible() then
-        Container:Hide()
-    else
-        Container:Show()
+dropTargetFrame:SetScript("OnMouseDown", function(self, button)
+    if button ~= "LeftButton" then
+        return
     end
-    Log('slash command triggered')
-end
+    local cursorType, itemId, itemLink = GetCursorInfo()
+    if itemId == nil then
+		return
+	end
+    Log(cursorType .. itemId .. itemLink)
+    if cursorType == "item" then
+        UpdateItemDisplay(itemId)
+        ClearCursor() 
+    end
+end)

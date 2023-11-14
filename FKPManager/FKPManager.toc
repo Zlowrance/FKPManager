@@ -2,12 +2,14 @@
 ## Version: 1.0
 ## Author: zachl
 ## Interface: 80205
+## Notes: uWu *purrs*
+## SavedVariables: FKPManagerData
 
 Globals.lua
 Logging.lua
 FKPData.lua
+App.lua
 frames/FKPListTemplate.xml
 frames/FKPListTemplate.lua
 frames/FKPDialog.xml
 frames/FKPDialog.lua
-download_fkp.sh

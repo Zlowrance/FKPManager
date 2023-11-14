@@ -1,7 +1,8 @@
 DEBUG=true
 
 CHAT_TYPE_RAID = "SAY" -- RAID
-CHAT_EVENT_TYPE = "CHAT_MSG_".. BASE_CHAT_TYPE
+CHAT_EVENT_TYPE = "CHAT_MSG_".. CHAT_TYPE_RAID
+ADDON_NAME = "FKPManager"
 
 function ToUnqualifiedCharacterName(fullName)
     -- Find the position of the hyphen
@@ -46,7 +47,7 @@ function GetChildOfFrame(parentFrame, childName)
     return nil
 end
 
-local function GetRaidMemberUnitIDFromName(name)
+function GetRaidMemberUnitIDFromName(name)
     for i = 1, 40 do
         if UnitName("raid" .. i) == name then
             return "raid" .. i

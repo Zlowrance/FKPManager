@@ -10,6 +10,9 @@
     <OutputPath>.</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="App.lua">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="assets\Bg.png" />
     <Content Include="assets\ButtonBG.png" />
     <Content Include="assets\ButtonBG_Disabled.png" />

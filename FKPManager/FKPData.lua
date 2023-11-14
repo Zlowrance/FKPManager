@@ -50,7 +50,7 @@ FKPData = {
     ["Ràv"] = 3,
     ["Glorious"] = 4,
     ["Hikopriest"] = 1,
-    ["Hozito"] = 0,
+    ["Brillhozi"] = 0,
     ["Brillhydra"] = -7,
     ["Camon"] = 4,
     ["Dontlikethis"] = 0,
@@ -151,4 +151,8 @@ FKPData = {
     ["Zizaran"] = 0,
     ["Immortalhd"] = 0,
     ["Clamsnooters"] = 0,
+    ["Sykkuno"] = 0,
+    ["Juddmage"] = 0,
+    ["Gitten"] = 0,
 }
+FKPDataLastUpdated = 1699984800

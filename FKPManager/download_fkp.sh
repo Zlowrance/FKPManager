@@ -6,6 +6,8 @@ CSV_FILE="downloaded_sheet.csv"
 
 LUA_FILE="FKPData.lua"
 
+CURRENT_TIMESTAMP=$(date +%s)
+
 curl -L "$SHEET_URL" -o "$CSV_FILE"
 
 # Process the first 3 lines HACKY: This is to skip the random \n in some of the column headers, so if those change then this could break
@@ -36,6 +38,8 @@ awk -v colA="$loc_col_a" -v colB="$loc_col_b" -F, 'NR > 1 {
 }' "$CSV_FILE" >> "$LUA_FILE"
 
 echo "}" >> "$LUA_FILE"
+
+echo "FKPDataLastUpdated = $CURRENT_TIMESTAMP" >> "$LUA_FILE"
 
 # cleanup csv file
 rm "$CSV_FILE"
