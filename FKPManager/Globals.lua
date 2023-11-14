@@ -24,3 +24,11 @@ function SendToRaid(message)
     -- message: The message you want to send to raid
     SendChatMessage(message, "SAY")
 end
+
+function ClearFrame(parentFrame)
+    local children = {parentFrame:GetChildren()}
+    for _, child in ipairs(children) do
+        child:Hide()
+        child:SetParent(nil)
+    end
+end

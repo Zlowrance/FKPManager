@@ -10,6 +10,12 @@
     <OutputPath>.</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="assets\Bg.png" />
+    <Content Include="assets\ButtonBG.png" />
+    <Content Include="assets\ButtonBG_Pushed.png" />
+    <Content Include="assets\CloseButton.png" />
+    <Content Include="assets\CloseButton_Pushed.png" />
+    <Content Include="assets\fkp logo.png" />
     <Content Include="download_fkp.sh" />
     <Content Include="FKPData.lua">
       <SubType>Code</SubType>
@@ -30,6 +36,9 @@
     <Content Include="Logging.lua">
       <SubType>Code</SubType>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="assets" />
   </ItemGroup>
   <Import Project="$(DevEnvDir)\Extensions\Tools\MSBuild\AddonStudio\Wow\3.0\WowAddonStudio.targets" />
   <!--

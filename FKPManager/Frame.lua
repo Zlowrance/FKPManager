@@ -15,7 +15,23 @@ local function GetTopEndRoll(index)
      return 100 - (math.min(index,5) * 10)
 end
 
-EndBiddingButton:SetScript("OnClick", function(self, button, down)
+local animGroup = BiddingButton:CreateAnimationGroup()
+
+local down = animGroup:CreateAnimation("Translation")
+down:SetOffset(0, -5) -- Move the button slightly down
+down:SetDuration(0.1) -- Quick downward movement
+down:SetOrder(1)
+down:SetSmoothing("OUT")
+
+local up = animGroup:CreateAnimation("Translation")
+up:SetOffset(0, 5) -- Move the button back up
+up:SetDuration(0.1) -- Quick upward movement
+up:SetOrder(2)
+up:SetSmoothing("IN")
+
+BiddingButton:SetScript("OnClick", function(self, button, down)
+    animGroup:Stop() -- Stop any current animations
+    animGroup:Play() -- Start the animation
     SendToRaid(" BIDDERS ")
     SendToRaid("=========")
 
@@ -45,14 +61,23 @@ contentParent:SetHeight(1)
 local function InitBidderList() 
     local buttonHeight = 30
     local index = 0
-    for name, _ in pairs(bids) do
-        local button = CreateFrame("Button", name, contentParent, "UIPanelButtonTemplate")
+    local sortedBids = {}
+    for name, fkp in pairs(bids) do
+        table.insert(sortedBids, {name = name, fkp = fkp})
+    end
+    -- Sort the array by value in descending order
+    table.sort(sortedBids, function(a, b) return a.fkp > b.fkp end)
+
+    ClearFrame(contentParent)
+
+    for _, bid in ipairs(sortedBids) do
+        local button = CreateFrame("Button", bid.name, contentParent, "UIPanelButtonTemplate")
         button:SetSize(scrollWidth - 5, buttonHeight) -- Set the size of the button
         button:SetPoint("TOP", 0, -buttonHeight * (index)) -- Position the button
 
         local topEnd = GetTopEndRoll(index)
 
-        button:SetText(name) -- Set button text
+        button:SetText(bid.name .. " |") -- Set button text
 
         -- Set up an OnClick script for the button
         button:SetScript("OnClick", function()
@@ -62,19 +87,38 @@ local function InitBidderList()
     end
 end
 
+local function GetFKP(playerName)
+    local fkp = FKPData[playerName]
+    if fkp == nil then
+	    return 0
+	end
+    return fkp
+end
+
+local function AddBid(playerName)
+    playerName = GetCharacterName(playerName)
+    if bids[playerName] ~= nil then
+        return
+	end
+    bids[playerName] = GetFKP(playerName)
+    print(playerName .. " added to the bid list.")
+    InitBidderList() 
+end
+
 Container:SetScript("OnEvent", function(self, event, ...)
     if event == CHAT_TYPE then
         local message, playerName = ...
 
         if not string.match(message, "%f[%a]bid%f[%A]") then
+            if DEBUG then
+                local testBidName = string.match(message, "testbid (%a+)")
+                if testBidName then
+                    AddBid(testBidName)
+	            end
+            end
             return
         end
-        playerName = GetCharacterName(playerName)
-        if not bids[playerName] then
-            bids[playerName] = true
-            print(playerName .. " added to the bid list.")
-            InitBidderList() 
-        end
+        AddBid(playerName)
     end
 end)
 
@@ -83,7 +127,7 @@ InitBidderList()
 local itemTexture = _G["ItemIcon"]
 local itemNameFontString = _G["ItemName"]
 
-function UpdateItemDisplay(itemId)
+local function UpdateItemDisplay(itemId)
     Log("displaying item " .. itemId)
     local itemName, _, _, _, _, _, _, _, _, itemIcon = GetItemInfo(itemId)
     if itemName and itemIcon then
@@ -95,7 +139,7 @@ end
 local scanTooltip = CreateFrame("GameTooltip", "ScanTooltip", nil, "GameTooltipTemplate")
 scanTooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
 
-function GetItemIDFromBagSlot(bag, slot)
+local function GetItemIDFromBagSlot(bag, slot)
     scanTooltip:ClearLines()
     scanTooltip:SetBagItem(bag, slot)
     local _, itemLink = scanTooltip:GetItem()

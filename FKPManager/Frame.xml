@@ -1,49 +1,82 @@
 <Ui xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="Frame.lua" />
-	<Frame name="Container" inherits="BackdropTemplate" parent="UIParent" toplevel="true" enableMouse="true" clampedToScreen="true">
-		<Size x="414" y="430" />
+	<Frame name="Container" parent="UIParent" toplevel="true" enableMouse="true" clampedToScreen="true">
+		<Size x="400" y="600" />
 		<Anchors>
-			<Anchor y="-55" point="CENTER" />
+			<Anchor y="-56" point="CENTER" />
 		</Anchors>
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" keyType="string" type="global" />
-		</KeyValues>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<BackgroundInsets left="4" right="4" top="4" bottom="4" />
+			<EdgeSize val="16" />
+		</Backdrop>
 		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture setAllPoints="true" ignoreParentScale="true" file="Interface\AddOns\FKPManager\assets\Bg.png">
+					<Size>
+						<AbsDimension x="400" y="600" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer>
 				<Texture name="ItemIcon">
 					<Size x="64" y="64" />
 					<Anchors>
-						<Anchor x="31" y="-32" point="TOPLEFT" />
+						<Anchor y="-120" point="TOP" />
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\AddOns\FKPManager\assets\fkp logo.png">
+					<Size x="196" y="203" />
+					<Anchors>
+						<Anchor y="100" point="TOP" />
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="ItemName" inherits="GameFontNormal" text="{item name}" justifyH="LEFT">
+				<FontString name="ItemName" inherits="GameFontNormal" text="{item name}">
 					<Size x="200" y="20" />
 					<Anchors>
-						<Anchor y="-53" point="TOP" />
+						<Anchor y="-190" point="TOP" />
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
 		<Frames>
 			<ScrollFrame name="ScrollFrame1" inherits="UIPanelScrollFrameTemplate" clipChildren="true">
-				<Size x="200" y="224" />
+				<Size x="200" y="302" />
 				<Anchors>
-					<Anchor y="-123" point="TOP" />
+					<Anchor x="2" y="-226" point="TOP" />
 				</Anchors>
 			</ScrollFrame>
 			<Button name="CloseButton" inherits="UIPanelCloseButton">
-				<Size x="30" y="30" />
+				<Size x="50" y="50" />
 				<Anchors>
-					<Anchor x="-5" y="-5" point="TOPRIGHT" />
+					<Anchor x="15" y="15" point="TOPRIGHT" />
 				</Anchors>
+				<NormalTexture file="Interface\AddOns\FKPManager\assets\CloseButton.png" />
+				<PushedTexture file="Interface\AddOns\FKPManager\assets\CloseButton_Pushed.png" />
 			</Button>
-			<Button name="EndBiddingButton" inherits="UIPanelButtonTemplate" text="End Bidding">
-				<Size x="91" y="32" />
+			<Button name="BiddingButton" text="Test">
+				<Size x="190" y="80" />
 				<Anchors>
-					<Anchor y="25" point="BOTTOM" />
+					<Anchor y="-5" point="BOTTOM" />
 				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString inherits="GameFontWhiteShadowLarge" font="Fonts\FRIZQT___CYR.TTF" text="START BIDDING">
+							<Size x="163" y="30" />
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</FontString>
+					</Layer>
+				</Layers>
+				<NormalTexture file="Interface\AddOns\FKPManager\assets\ButtonBG.png" />
+				<PushedTexture file="Interface\AddOns\FKPManager\assets\ButtonBG_Pushed.png" />
 			</Button>
 		</Frames>
 	</Frame>
