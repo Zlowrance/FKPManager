@@ -6,5 +6,7 @@
 Globals.lua
 Logging.lua
 FKPData.lua
-Frame.xml
-Frame.lua
+Frames/FKPListTemplate.xml
+Frames/FKPListTemplate.lua
+Frames/FKPDialog.xml
+Frames/FKPDialog.lua

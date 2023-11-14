@@ -15,23 +15,7 @@ local function GetTopEndRoll(index)
      return 100 - (math.min(index,5) * 10)
 end
 
-local animGroup = BiddingButton:CreateAnimationGroup()
-
-local down = animGroup:CreateAnimation("Translation")
-down:SetOffset(0, -5) -- Move the button slightly down
-down:SetDuration(0.1) -- Quick downward movement
-down:SetOrder(1)
-down:SetSmoothing("OUT")
-
-local up = animGroup:CreateAnimation("Translation")
-up:SetOffset(0, 5) -- Move the button back up
-up:SetDuration(0.1) -- Quick upward movement
-up:SetOrder(2)
-up:SetSmoothing("IN")
-
 BiddingButton:SetScript("OnClick", function(self, button, down)
-    animGroup:Stop() -- Stop any current animations
-    animGroup:Play() -- Start the animation
     SendToRaid(" BIDDERS ")
     SendToRaid("=========")
 

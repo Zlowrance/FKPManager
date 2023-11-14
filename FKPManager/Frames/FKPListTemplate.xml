@@ -1,0 +1,36 @@
+<Ui xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="FKPListTemplate.lua" />
+	<Frame name="FKPListTemplate" inherits="BackdropTemplate" virtual="true">
+		<Size x="250" y="80" />
+		<Anchors>
+			<Anchor point="CENTER" />
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" keyType="string" type="global" />
+		</KeyValues>
+		<Layers>
+			<Layer>
+				<Texture name="Portrait">
+					<Size x="64" y="64" />
+					<Anchors>
+						<Anchor x="5" point="LEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="Name" inherits="GameFontNormal" text="FontString2" justifyH="LEFT">
+					<Size x="80" y="20" />
+					<Anchors>
+						<Anchor x="75" y="-12" point="TOPLEFT" />
+					</Anchors>
+				</FontString>
+				<FontString name="FKP" inherits="GameFontWhiteShadowLarge" text="FontString3" justifyH="LEFT">
+					<Size x="109" y="20" />
+					<Anchors>
+						<Anchor x="75" y="-38" point="TOPLEFT" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

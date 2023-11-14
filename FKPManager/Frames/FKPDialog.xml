@@ -1,5 +1,5 @@
 <Ui xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.blizzard.com/wow/ui/">
-	<Script file="Frame.lua" />
+	<Script file="FKPDialog.lua" />
 	<Frame name="Container" parent="UIParent" toplevel="true" enableMouse="true" clampedToScreen="true">
 		<Size x="400" y="600" />
 		<Anchors>
@@ -11,7 +11,10 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture setAllPoints="true" ignoreParentScale="true" file="Interface\AddOns\FKPManager\assets\Bg.png">
+				<Texture name="BG" setAllPoints="true" file="Interface\AddOns\FKPManager\assets\Bg.png" horizTile="true" vertTile="true">
+					<TileSize>
+            256
+          </TileSize>
 					<Size>
 						<AbsDimension x="400" y="600" />
 					</Size>
@@ -19,16 +22,25 @@
 						<Anchor point="TOPLEFT" />
 						<Anchor point="BOTTOMRIGHT" />
 					</Anchors>
+					<TexCoords left="0" right="1" top="0" bottom="1" />
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture name="ItemIconBG" file="Interface\BUTTONS\UI-EmptySlot">
+					<Size x="80" y="80" />
+					<Anchors>
+						<Anchor y="-115" point="TOP" />
+					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer>
 				<Texture name="ItemIcon">
-					<Size x="64" y="64" />
+					<Size x="50" y="50" />
 					<Anchors>
-						<Anchor y="-120" point="TOP" />
+						<Anchor y="-130" point="TOP" />
 					</Anchors>
 				</Texture>
-				<Texture file="Interface\AddOns\FKPManager\assets\fkp logo.png">
+				<Texture name="Logo" file="Interface\AddOns\FKPManager\assets\fkp logo.png">
 					<Size x="196" y="203" />
 					<Anchors>
 						<Anchor y="100" point="TOP" />
@@ -36,7 +48,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="ItemName" inherits="GameFontNormal" text="{item name}">
+				<FontString name="ItemName" inherits="GameFontNormal" text="">
 					<Size x="200" y="20" />
 					<Anchors>
 						<Anchor y="-190" point="TOP" />
@@ -48,8 +60,11 @@
 			<ScrollFrame name="ScrollFrame1" inherits="UIPanelScrollFrameTemplate" clipChildren="true">
 				<Size x="200" y="302" />
 				<Anchors>
-					<Anchor x="2" y="-226" point="TOP" />
+					<Anchor y="-217" point="TOP" />
 				</Anchors>
+				<Backdrop bgFile="">
+					<Color r="1" g="1" b="1" />
+				</Backdrop>
 			</ScrollFrame>
 			<Button name="CloseButton" inherits="UIPanelCloseButton">
 				<Size x="50" y="50" />
@@ -71,12 +86,20 @@
 							<Anchors>
 								<Anchor point="CENTER" />
 							</Anchors>
-							<Color r="1" g="1" b="1" />
 						</FontString>
 					</Layer>
 				</Layers>
 				<NormalTexture file="Interface\AddOns\FKPManager\assets\ButtonBG.png" />
 				<PushedTexture file="Interface\AddOns\FKPManager\assets\ButtonBG_Pushed.png" />
+				<DisabledTexture file="Interface\AddOns\FKPManager\assets\ButtonBG_Disabled.png" />
+			</Button>
+			<Button name="ClearItemButton" inherits="UIPanelCloseButton" hidden="true">
+				<Size x="25" y="25" />
+				<Anchors>
+					<Anchor x="-162" y="-117" point="TOPRIGHT" />
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\FKPManager\assets\CloseButton.png" />
+				<PushedTexture file="Interface\AddOns\FKPManager\assets\CloseButton_Pushed.png" />
 			</Button>
 		</Frames>
 	</Frame>

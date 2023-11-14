@@ -116,7 +116,7 @@ FKPData = {
     ["Snutzhcamp"] = 0,
     ["Sodasodasoda"] = 0,
     ["Mainfang"] = 1,
-    ["Soniibear"] = 3,
+    ["Soniibear"] = 7,
     ["Swordiway"] = 3,
     ["Spens"] = 4,
     ["Destrogodx"] = 0,
@@ -150,4 +150,5 @@ FKPData = {
     ["Brillhilda"] = 17,
     ["Zizaran"] = 0,
     ["Immortalhd"] = 0,
+    ["Clamsnooters"] = 0,
 }

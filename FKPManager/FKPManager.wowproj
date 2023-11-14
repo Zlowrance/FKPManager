@@ -12,6 +12,7 @@
   <ItemGroup>
     <Content Include="assets\Bg.png" />
     <Content Include="assets\ButtonBG.png" />
+    <Content Include="assets\ButtonBG_Disabled.png" />
     <Content Include="assets\ButtonBG_Pushed.png" />
     <Content Include="assets\CloseButton.png" />
     <Content Include="assets\CloseButton_Pushed.png" />
@@ -23,12 +24,19 @@
     <Content Include="FKPManager.toc">
       <SubType>TableOfContents</SubType>
     </Content>
-    <Content Include="Frame.xml">
+    <Content Include="Frames\FKPDialog.lua">
+      <SubType>Code</SubType>
+      <DependentUpon>Frames\FKPDialog.xml</DependentUpon>
+    </Content>
+    <Content Include="Frames\FKPDialog.xml">
       <SubType>Frame</SubType>
     </Content>
-    <Content Include="Frame.lua">
+    <Content Include="Frames\FKPListTemplate.lua">
       <SubType>Code</SubType>
-      <DependentUpon>Frame.xml</DependentUpon>
+      <DependentUpon>Frames\FKPListTemplate.xml</DependentUpon>
+    </Content>
+    <Content Include="Frames\FKPListTemplate.xml">
+      <SubType>Frame</SubType>
     </Content>
     <Content Include="Globals.lua">
       <SubType>Code</SubType>
@@ -39,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets" />
+    <Folder Include="Frames" />
   </ItemGroup>
   <Import Project="$(DevEnvDir)\Extensions\Tools\MSBuild\AddonStudio\Wow\3.0\WowAddonStudio.targets" />
   <!--
