@@ -1,5 +1,7 @@
 local bids = {}
 
+-- INITIALIZATION
+
 Container:RegisterEvent(CHAT_EVENT_TYPE)
 Container:SetMovable(true)
 Container:EnableMouse(true)
@@ -10,6 +12,17 @@ end)
 Container:SetScript("OnMouseUp", function(self)
     self:StopMovingOrSizing()
 end)
+
+local contentParent = CreateFrame("Frame")
+local scrollWidth = ScrollFrame1:GetWidth()
+ScrollFrame1:SetScrollChild(contentParent)
+contentParent:SetWidth(scrollWidth)
+contentParent:SetHeight(1)
+
+Container:Hide()
+BiddingButton:Disable()
+
+-- LOCAL FUNCTIONS
 
 local function GetTopEndRoll(index)
      return 100 - (math.min(index,5) * 10)
@@ -27,12 +40,92 @@ local function UpdateItemDisplay(itemId)
     BiddingButton:Enable()
 end
 
+dropTarget:SetScript("OnReceiveDrag", function(self)
+    local cursorType, itemId, itemLink = GetCursorInfo()
+    if cursorType == "item" then
+        UpdateItemDisplay(itemId)
+        ClearCursor()
+    end
+end)
+
 local function ClearItemDisplay()
     ItemIcon:SetTexture(nil)
     ItemName:SetText("")
     ClearItemButton:Hide()
     BiddingButton:Disable()
 end
+
+local function GetFKP(playerName)
+    local fkp = FKPData[playerName]
+    if fkp == nil then
+        return 0
+    end
+    return fkp
+end
+
+local function InitBidderList()
+    local buttonHeight = 80
+    local index = 0
+    local sortedBids = {}
+    for name, fkp in pairs(bids) do
+        table.insert(sortedBids, {name = name, fkp = fkp})
+    end
+    -- Sort the array by value in descending order
+    table.sort(sortedBids, function(a, b) return a.fkp > b.fkp end)
+
+    ClearFrame(contentParent)
+
+    for _, bid in ipairs(sortedBids) do
+        Log(bid.name .. bid.fkp)
+        local button = CreateFrame("Frame", bid.name, contentParent, "FKPListTemplate")
+        button:SetSize(scrollWidth - 5, buttonHeight) -- Set the size of the button
+        button:SetPoint("TOP", 0, -buttonHeight * (index)) -- Position the button
+
+        local playerPortrait = _G[bid.name .. "Portrait"]
+        local playerName = _G[bid.name .. "Name"]
+        local playerFKP = _G[bid.name .. "FKP"]
+        local playerRoll = _G[bid.name .. "Roll"]
+        local removeButton = _G[bid.name .. "RemoveButton"]
+
+        local topEnd = GetTopEndRoll(index)
+        playerName:SetText(bid.name)
+        playerFKP:SetText(bid.fkp)
+        playerRoll:SetText("rolls 1-" .. topEnd)
+
+        local unitID = GetRaidMemberUnitIDFromName(bid.name)
+        if unitID then
+            SetPortraitTexture(playerPortrait, unitID)
+        end
+
+        removeButton:SetScript("OnClick", function(self, button, down)
+            RemoveBid(bid.name)
+        end)
+
+        index = index + 1
+    end
+end
+
+local function AddBid(playerName)
+    playerName = ToUnqualifiedCharacterName(playerName)
+    if bids[playerName] ~= nil then
+        return
+    end
+    bids[playerName] = GetFKP(playerName)
+    Log(playerName .. " added to the bid list.")
+    InitBidderList()
+end
+
+local function RemoveBid(playerName)
+    playerName = ToUnqualifiedCharacterName(playerName)
+    if bids[playerName] == nil then
+        return
+    end
+    bids[playerName] = nil
+    Log(playerName .. " removed from the bid list.")
+    InitBidderList()
+end
+
+-- BUTTON HANDLERS
 
 ClearItemButton:SetScript("OnClick", function(self, button, down)
     ClearItemDisplay()
@@ -58,68 +151,6 @@ BiddingButton:SetScript("OnClick", function(self, button, down)
     end
 end)
 
--- setup scroller content
-local contentParent = CreateFrame("Frame")
-local scrollWidth = ScrollFrame1:GetWidth()
-ScrollFrame1:SetScrollChild(contentParent)
-contentParent:SetWidth(scrollWidth)
-contentParent:SetHeight(1)
-
-local function InitBidderList() 
-    local buttonHeight = 80
-    local index = 0
-    local sortedBids = {}
-    for name, fkp in pairs(bids) do
-        table.insert(sortedBids, {name = name, fkp = fkp})
-    end
-    -- Sort the array by value in descending order
-    table.sort(sortedBids, function(a, b) return a.fkp > b.fkp end)
-
-    ClearFrame(contentParent)
-
-    for _, bid in ipairs(sortedBids) do
-        Log(bid.name .. bid.fkp)
-        local button = CreateFrame("Frame", bid.name, contentParent, "FKPListTemplate")
-        button:SetSize(scrollWidth - 5, buttonHeight) -- Set the size of the button
-        button:SetPoint("TOP", 0, -buttonHeight * (index)) -- Position the button
-
-        local playerPortrait = _G[bid.name .. "Portrait"]
-        local playerName = _G[bid.name .. "Name"]
-        local playerFKP = _G[bid.name .. "FKP"]
-        local playerRoll = _G[bid.name .. "Roll"]
-        
-        local topEnd = GetTopEndRoll(index)
-        playerName:SetText(bid.name)
-        playerFKP:SetText(bid.fkp)
-        playerRoll:SetText("rolls 1-" .. topEnd)
-
-        local unitID = GetRaidMemberUnitIDFromName(bid.name)
-        if unitID then
-            SetPortraitTexture(playerPortrait, unitID)
-        end
-
-        index = index + 1
-    end
-end
-
-local function GetFKP(playerName)
-    local fkp = FKPData[playerName]
-    if fkp == nil then
-	    return 0
-	end
-    return fkp
-end
-
-local function AddBid(playerName)
-    playerName = GetCharacterName(playerName)
-    if bids[playerName] ~= nil then
-        return
-	end
-    bids[playerName] = GetFKP(playerName)
-    Log(playerName .. " added to the bid list.")
-    InitBidderList() 
-end
-
 Container:SetScript("OnEvent", function(self, event, ...)
     if event == CHAT_EVENT_TYPE then
         local message, playerName = ...
@@ -137,42 +168,11 @@ Container:SetScript("OnEvent", function(self, event, ...)
     end
 end)
 
-InitBidderList()
-
-local scanTooltip = CreateFrame("GameTooltip", "ScanTooltip", nil, "GameTooltipTemplate")
-scanTooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
-
-local function GetItemIDFromBagSlot(bag, slot)
-    scanTooltip:ClearLines()
-    scanTooltip:SetBagItem(bag, slot)
-    local _, itemLink = scanTooltip:GetItem()
-    if itemLink then
-        local _, _, itemIDString = string.find(itemLink, "item:(%d+):")
-        local itemID = tonumber(itemIDString)
-        return itemID
-    end
-    return nil
-end
-
-hooksecurefunc("ContainerFrameItemButton_OnModifiedClick", function(self, button)
-    Log("clicked bags button: " .. button)
-    if not Container:IsVisible() then
-        Log("frame not visible, exiting")
-        return
-    end
-    if button ~= "LeftButton" then
-        Log("not left button, exiting")
-	    return
-	end
-    local bag = self:GetParent():GetID()
-    local slot = self:GetID()
-    local itemID = GetItemIDFromBagSlot(bag, slot)
-    Log("item id " .. tostring(itemID))
-    if itemID then
-        UpdateItemDisplay(itemID)
-    end
+Container:SetScript("OnShow", function(self)
+    InitBidderList()
 end)
 
+-- SLASH COMMANDS
 
 SLASH_FKP1 = "/fkp"
 
@@ -184,6 +184,3 @@ SlashCmdList["FKP"] = function(msg)
     end
     Log('slash command triggered')
 end
-
-Container:Hide()
-BiddingButton:Disable()

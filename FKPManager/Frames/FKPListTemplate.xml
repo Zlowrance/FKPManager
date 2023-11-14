@@ -1,13 +1,16 @@
 <Ui xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="FKPListTemplate.lua" />
-	<Frame name="FKPListTemplate" inherits="BackdropTemplate" virtual="true">
-		<Size x="250" y="80" />
+	<Frame name="FKPListTemplate" virtual="true">
+		<Size x="283" y="80" />
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
-		<KeyValues>
-			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" keyType="string" type="global" />
-		</KeyValues>
+		<Backdrop bgFile="Interface\AddOns\FKPManager\assets\WhiteSquare.png" edgeFile="Interface\Tooltips\UI-Tooltip-Border">
+			<BackgroundInsets left="5" right="5" top="5" bottom="5" />
+			<EdgeSize val="20" />
+			<Color r="1" g="0.753" b="0.753" />
+			<BorderColor r="1" g="0.753" b="0.753" />
+		</Backdrop>
 		<Layers>
 			<Layer>
 				<Texture name="$parentPortrait">
@@ -19,24 +22,37 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="$parentName" inherits="GameFontNormal" text="FontString2" justifyH="LEFT">
-					<Size x="80" y="20" />
+					<Size x="195" y="20" />
 					<Anchors>
-						<Anchor x="75" y="-12" point="TOPLEFT" />
+						<Anchor x="75" y="-10" point="TOPLEFT" />
+						<Anchor x="-10" y="-10" point="TOPRIGHT" />
 					</Anchors>
 				</FontString>
 				<FontString name="$parentFKP" inherits="GameFontWhiteShadowLarge" text="FontString3" justifyH="LEFT">
-					<Size x="109" y="20" />
+					<Size x="176" y="20" />
 					<Anchors>
-						<Anchor x="75" y="-30" point="TOPLEFT" />
+						<Anchor x="75" point="LEFT" />
+						<Anchor x="-10" point="RIGHT" />
 					</Anchors>
 				</FontString>
-				<FontString name="$parentRoll" inherits="NumberFontNormalGray" text="FontString3" justifyH="LEFT">
-					<Size x="109" y="20" />
+				<FontString name="$parentRoll" inherits="QuestDifficulty_Trivial" text="FontString3">
+					<Size x="176" y="20" />
 					<Anchors>
 						<Anchor x="75" y="10" point="BOTTOMLEFT" />
+						<Anchor x="-10" y="10" point="BOTTOMRIGHT" />
 					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button name="$parentRemoveButton" inherits="UIPanelCloseButton">
+				<Size x="50" y="50" />
+				<Anchors>
+					<Anchor x="20" point="RIGHT" />
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\FKPManager\assets\CloseButton.png" />
+				<PushedTexture file="Interface\AddOns\FKPManager\assets\CloseButton_Pushed.png" />
+			</Button>
+		</Frames>
 	</Frame>
 </Ui>

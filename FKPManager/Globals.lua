@@ -3,16 +3,15 @@ DEBUG=true
 CHAT_TYPE_RAID = "SAY" -- RAID
 CHAT_EVENT_TYPE = "CHAT_MSG_".. BASE_CHAT_TYPE
 
-function GetCharacterName(fullName)
+function ToUnqualifiedCharacterName(fullName)
     -- Find the position of the hyphen
     local hyphenPos = string.find(fullName, "-")
     if hyphenPos then
         -- Extract and return the character name part
         return string.sub(fullName, 1, hyphenPos - 1)
-    else
-        -- If there's no hyphen, return the full name
-        return fullName
     end
+    -- If there's no hyphen, return the full name
+    return fullName
 end
 
 function SendToPlayer(message, playerName)
@@ -47,7 +46,7 @@ function GetChildOfFrame(parentFrame, childName)
     return nil
 end
 
-function GetRaidMemberUnitIDFromName(name)
+local function GetRaidMemberUnitIDFromName(name)
     for i = 1, 40 do
         if UnitName("raid" .. i) == name then
             return "raid" .. i
