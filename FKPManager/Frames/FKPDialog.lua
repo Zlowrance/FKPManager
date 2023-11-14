@@ -83,16 +83,15 @@ local function InitBidderList()
         button:SetSize(scrollWidth - 5, buttonHeight) -- Set the size of the button
         button:SetPoint("TOP", 0, -buttonHeight * (index)) -- Position the button
 
-        local topEnd = GetTopEndRoll(index)
-
         local playerPortrait = _G[bid.name .. "Portrait"]
         local playerName = _G[bid.name .. "Name"]
         local playerFKP = _G[bid.name .. "FKP"]
         local playerRoll = _G[bid.name .. "Roll"]
-
+        
+        local topEnd = GetTopEndRoll(index)
         playerName:SetText(bid.name)
         playerFKP:SetText(bid.fkp)
-        playerRoll:SetText("rolls 1-" .. GetTopEndRoll(index))
+        playerRoll:SetText("rolls 1-" .. topEnd)
 
         local unitID = GetRaidMemberUnitIDFromName(bid.name)
         if unitID then

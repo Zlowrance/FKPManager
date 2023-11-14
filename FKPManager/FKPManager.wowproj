@@ -24,18 +24,18 @@
     <Content Include="FKPManager.toc">
       <SubType>TableOfContents</SubType>
     </Content>
-    <Content Include="Frames\FKPDialog.lua">
+    <Content Include="frames\FKPDialog.lua">
       <SubType>Code</SubType>
-      <DependentUpon>Frames\FKPDialog.xml</DependentUpon>
+      <DependentUpon>frames\FKPDialog.xml</DependentUpon>
     </Content>
-    <Content Include="Frames\FKPDialog.xml">
+    <Content Include="frames\FKPDialog.xml">
       <SubType>Frame</SubType>
     </Content>
-    <Content Include="Frames\FKPListTemplate.lua">
+    <Content Include="frames\FKPListTemplate.lua">
       <SubType>Code</SubType>
-      <DependentUpon>Frames\FKPListTemplate.xml</DependentUpon>
+      <DependentUpon>frames\FKPListTemplate.xml</DependentUpon>
     </Content>
-    <Content Include="Frames\FKPListTemplate.xml">
+    <Content Include="frames\FKPListTemplate.xml">
       <SubType>Frame</SubType>
     </Content>
     <Content Include="Globals.lua">
@@ -47,7 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="assets" />
-    <Folder Include="Frames" />
+    <Folder Include="frames" />
   </ItemGroup>
   <Import Project="$(DevEnvDir)\Extensions\Tools\MSBuild\AddonStudio\Wow\3.0\WowAddonStudio.targets" />
   <!--
