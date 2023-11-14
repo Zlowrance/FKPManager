@@ -32,6 +32,13 @@
 						<Anchor y="-115" point="TOP" />
 					</Anchors>
 				</Texture>
+				<Texture name="ItemNameBG" alpha="0.75" file="Interface\AddOns\FKPManager\assets\FadedBG.png">
+					<Size x="200" y="20" />
+					<Anchors>
+						<Anchor x="100" y="-190" point="TOPLEFT" />
+					</Anchors>
+					<Color />
+				</Texture>
 			</Layer>
 			<Layer>
 				<Texture name="ItemIcon">
@@ -48,7 +55,7 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="ItemName" inherits="GameFontNormal" text="">
+				<FontString name="ItemName" inherits="GameFontNormal" text="Select Item">
 					<Size x="200" y="20" />
 					<Anchors>
 						<Anchor y="-190" point="TOP" />

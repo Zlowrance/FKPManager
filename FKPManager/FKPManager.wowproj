@@ -19,6 +19,7 @@
     <Content Include="assets\ButtonBG_Pushed.png" />
     <Content Include="assets\CloseButton.png" />
     <Content Include="assets\CloseButton_Pushed.png" />
+    <Content Include="assets\FadedBG.png" />
     <Content Include="assets\fkp logo.png" />
     <Content Include="assets\WhiteSquare.png" />
     <Content Include="download_fkp.sh" />

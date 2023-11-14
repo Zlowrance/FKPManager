@@ -1,8 +1,9 @@
+local biddingStarted = false
 local bids = {}
+local currentAuctionItemID = nil
+local currentAuctionItemLink =  nil
 
 -- INITIALIZATION
-
-FKPDialog:RegisterEvent(CHAT_EVENT_TYPE)
 FKPDialog:SetMovable(true)
 FKPDialog:EnableMouse(true)
 FKPDialog:RegisterForDrag("LeftButton")
@@ -30,15 +31,17 @@ end
 
 local function UpdateItemDisplay(itemId)
     Log("displaying item " .. itemId)
-    local itemName, _, _, _, _, _, _, _, _, itemIcon = GetItemInfo(itemId)
-    if not itemName or not itemIcon then
+    local _, itemLink, _, _, _, _, _, _, _, itemIcon = GetItemInfo(itemId)
+    if not itemLink or not itemIcon then
         return
     end
     ItemIcon:SetTexture(itemIcon)
-    ItemName:SetText(itemName)
+    ItemName:SetText(itemLink)
     ClearItemButton:Show()
     BiddingButton:Enable()
     Instructions:Hide()
+    currentAuctionItemLink = itemLink
+    currentAuctionItemID = itemId
 end
 
 local function ClearItemDisplay()
@@ -47,6 +50,9 @@ local function ClearItemDisplay()
     ClearItemButton:Hide()
     BiddingButton:Disable()
     Instructions:Show()
+    FKPDialog:UnregisterEvent(CHAT_EVENT_TYPE)
+    currentAuctionItemLink = nil
+    currentAuctionItemID = nil
 end
 
 local function GetFKP(playerName)
@@ -140,6 +146,15 @@ ClearItemButton:SetScript("OnClick", function(self, button, down)
 end)
 
 BiddingButton:SetScript("OnClick", function(self, button, down)
+    if not biddingStarted then
+        FKPDialog:RegisterEvent(CHAT_EVENT_TYPE)
+        SendToRaid("BIDDING START: " .. currentAuctionItemLink)
+        biddingStarted = true
+        BiddingButton:SetText("End Bidding")
+        return
+    end
+
+
     SendToRaid(" BIDDERS ")
     SendToRaid("=========")
 
@@ -194,13 +209,26 @@ dropTargetFrame:SetScript("OnMouseDown", function(self, button)
     if button ~= "LeftButton" then
         return
     end
-    local cursorType, itemId, itemLink = GetCursorInfo()
+    local cursorType, itemId, link = GetCursorInfo()
     if itemId == nil then
 		return
 	end
-    Log(cursorType .. itemId .. itemLink)
+    Log(cursorType .. itemId .. link)
     if cursorType == "item" then
         UpdateItemDisplay(itemId)
         ClearCursor() 
     end
+end)
+
+dropTargetFrame:SetScript("OnEnter", function(self)
+    if currentAuctionItemID == nil then
+        return
+    end
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:SetItemByID(currentAuctionItemID)
+    GameTooltip:Show()
+end)
+
+dropTargetFrame:SetScript("OnLeave", function(self)
+    GameTooltip:Hide()
 end)
