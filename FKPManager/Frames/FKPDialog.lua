@@ -93,6 +93,7 @@ local function InitBidderList()
         if index <= #existingFrames then
             -- Reuse existing button
             button = existingFrames[index]
+            button:Show()
         else
             -- Create new button
             button = CreateFrame("Frame", buttonName, contentParent, "FKPListTemplate")
