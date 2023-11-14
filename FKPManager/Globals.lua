@@ -1,6 +1,7 @@
 DEBUG=true
 
-CHAT_TYPE = "CHAT_MSG_SAY" -- "CHAT_MSG_RAID"
+CHAT_TYPE_RAID = "SAY" -- RAID
+CHAT_EVENT_TYPE = "CHAT_MSG_".. BASE_CHAT_TYPE
 
 function GetCharacterName(fullName)
     -- Find the position of the hyphen
@@ -22,7 +23,7 @@ end
 
 function SendToRaid(message)
     -- message: The message you want to send to raid
-    SendChatMessage(message, "SAY")
+    SendChatMessage(message, CHAT_TYPE_RAID)
 end
 
 function ClearFrame(parentFrame)
@@ -35,4 +36,22 @@ end
 
 function ShowError(message)
     UIErrorsFrame:AddMessage(message, 1.0, 0.1, 0.1, 1.0)
+end
+
+function GetChildOfFrame(parentFrame, childName)
+    for _, child in ipairs({parentFrame:GetChildren()}) do
+        if child:GetName() == childName then
+            return child
+        end
+    end
+    return nil
+end
+
+function GetRaidMemberUnitIDFromName(name)
+    for i = 1, 40 do
+        if UnitName("raid" .. i) == name then
+            return "raid" .. i
+        end
+    end
+    return nil
 end

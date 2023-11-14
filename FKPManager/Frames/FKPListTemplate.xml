@@ -10,7 +10,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer>
-				<Texture name="Portrait">
+				<Texture name="$parentPortrait">
 					<Size x="64" y="64" />
 					<Anchors>
 						<Anchor x="5" point="LEFT" />
@@ -18,16 +18,22 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="Name" inherits="GameFontNormal" text="FontString2" justifyH="LEFT">
+				<FontString name="$parentName" inherits="GameFontNormal" text="FontString2" justifyH="LEFT">
 					<Size x="80" y="20" />
 					<Anchors>
 						<Anchor x="75" y="-12" point="TOPLEFT" />
 					</Anchors>
 				</FontString>
-				<FontString name="FKP" inherits="GameFontWhiteShadowLarge" text="FontString3" justifyH="LEFT">
+				<FontString name="$parentFKP" inherits="GameFontWhiteShadowLarge" text="FontString3" justifyH="LEFT">
 					<Size x="109" y="20" />
 					<Anchors>
-						<Anchor x="75" y="-38" point="TOPLEFT" />
+						<Anchor x="75" y="-30" point="TOPLEFT" />
+					</Anchors>
+				</FontString>
+				<FontString name="$parentRoll" inherits="NumberFontNormalGray" text="FontString3" justifyH="LEFT">
+					<Size x="109" y="20" />
+					<Anchors>
+						<Anchor x="75" y="10" point="BOTTOMLEFT" />
 					</Anchors>
 				</FontString>
 			</Layer>

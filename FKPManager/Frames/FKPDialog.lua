@@ -1,6 +1,6 @@
 local bids = {}
 
-Container:RegisterEvent(CHAT_TYPE)
+Container:RegisterEvent(CHAT_EVENT_TYPE)
 Container:SetMovable(true)
 Container:EnableMouse(true)
 Container:RegisterForDrag("LeftButton")
@@ -14,6 +14,29 @@ end)
 local function GetTopEndRoll(index)
      return 100 - (math.min(index,5) * 10)
 end
+
+local function UpdateItemDisplay(itemId)
+    Log("displaying item " .. itemId)
+    local itemName, _, _, _, _, _, _, _, _, itemIcon = GetItemInfo(itemId)
+    if not itemName or not itemIcon then
+        return
+    end
+    ItemIcon:SetTexture(itemIcon)
+    ItemName:SetText(itemName)
+    ClearItemButton:Show()
+    BiddingButton:Enable()
+end
+
+local function ClearItemDisplay()
+    ItemIcon:SetTexture(nil)
+    ItemName:SetText("")
+    ClearItemButton:Hide()
+    BiddingButton:Disable()
+end
+
+ClearItemButton:SetScript("OnClick", function(self, button, down)
+    ClearItemDisplay()
+end)
 
 BiddingButton:SetScript("OnClick", function(self, button, down)
     SendToRaid(" BIDDERS ")
@@ -43,7 +66,7 @@ contentParent:SetWidth(scrollWidth)
 contentParent:SetHeight(1)
 
 local function InitBidderList() 
-    local buttonHeight = 30
+    local buttonHeight = 80
     local index = 0
     local sortedBids = {}
     for name, fkp in pairs(bids) do
@@ -55,18 +78,27 @@ local function InitBidderList()
     ClearFrame(contentParent)
 
     for _, bid in ipairs(sortedBids) do
-        local button = CreateFrame("Button", bid.name, contentParent, "UIPanelButtonTemplate")
+        Log(bid.name .. bid.fkp)
+        local button = CreateFrame("Frame", bid.name, contentParent, "FKPListTemplate")
         button:SetSize(scrollWidth - 5, buttonHeight) -- Set the size of the button
         button:SetPoint("TOP", 0, -buttonHeight * (index)) -- Position the button
 
         local topEnd = GetTopEndRoll(index)
 
-        button:SetText(bid.name .. " |") -- Set button text
+        local playerPortrait = _G[bid.name .. "Portrait"]
+        local playerName = _G[bid.name .. "Name"]
+        local playerFKP = _G[bid.name .. "FKP"]
+        local playerRoll = _G[bid.name .. "Roll"]
 
-        -- Set up an OnClick script for the button
-        button:SetScript("OnClick", function()
-            Log("Rolled " .. math.random(1,topEnd))
-        end)
+        playerName:SetText(bid.name)
+        playerFKP:SetText(bid.fkp)
+        playerRoll:SetText("rolls 1-" .. GetTopEndRoll(index))
+
+        local unitID = GetRaidMemberUnitIDFromName(bid.name)
+        if unitID then
+            SetPortraitTexture(playerPortrait, unitID)
+        end
+
         index = index + 1
     end
 end
@@ -85,12 +117,12 @@ local function AddBid(playerName)
         return
 	end
     bids[playerName] = GetFKP(playerName)
-    print(playerName .. " added to the bid list.")
+    Log(playerName .. " added to the bid list.")
     InitBidderList() 
 end
 
 Container:SetScript("OnEvent", function(self, event, ...)
-    if event == CHAT_TYPE then
+    if event == CHAT_EVENT_TYPE then
         local message, playerName = ...
 
         if not string.match(message, "%f[%a]bid%f[%A]") then
@@ -107,18 +139,6 @@ Container:SetScript("OnEvent", function(self, event, ...)
 end)
 
 InitBidderList()
-
-local itemTexture = _G["ItemIcon"]
-local itemNameFontString = _G["ItemName"]
-
-local function UpdateItemDisplay(itemId)
-    Log("displaying item " .. itemId)
-    local itemName, _, _, _, _, _, _, _, _, itemIcon = GetItemInfo(itemId)
-    if itemName and itemIcon then
-        itemTexture:SetTexture(itemIcon)
-        itemNameFontString:SetText(itemName)
-    end
-end
 
 local scanTooltip = CreateFrame("GameTooltip", "ScanTooltip", nil, "GameTooltipTemplate")
 scanTooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
@@ -167,3 +187,4 @@ SlashCmdList["FKP"] = function(msg)
 end
 
 Container:Hide()
+BiddingButton:Disable()
