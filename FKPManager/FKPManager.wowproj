@@ -17,6 +17,8 @@
     <Content Include="assets\ButtonBG.png" />
     <Content Include="assets\ButtonBG_Disabled.png" />
     <Content Include="assets\ButtonBG_Pushed.png" />
+    <Content Include="assets\CheckButton.png" />
+    <Content Include="assets\CheckButton_Pushed.png" />
     <Content Include="assets\CloseButton.png" />
     <Content Include="assets\CloseButton_Pushed.png" />
     <Content Include="assets\FadedBG.png" />
@@ -24,6 +26,9 @@
     <Content Include="assets\WhiteSquare.png" />
     <Content Include="download_fkp.sh" />
     <Content Include="FKPData.lua">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="FKPHelper.lua">
       <SubType>Code</SubType>
     </Content>
     <Content Include="FKPManager.toc">

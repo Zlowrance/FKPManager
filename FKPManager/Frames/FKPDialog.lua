@@ -1,5 +1,13 @@
-local biddingStarted = false
+-- LOCAL VARS
+local States = {
+    IDLE = 1,
+    ITEM_SELECTED = 2,
+    BIDDING_STARTED = 3,
+    BIDDING_ENDED = 4
+}
+local state = States.IDLE
 local bids = {}
+local sortedBids = {}
 local currentAuctionItemID = nil
 local currentAuctionItemLink =  nil
 
@@ -37,9 +45,6 @@ local function UpdateItemDisplay(itemId)
     end
     ItemIcon:SetTexture(itemIcon)
     ItemName:SetText(itemLink)
-    ClearItemButton:Show()
-    BiddingButton:Enable()
-    Instructions:Hide()
     currentAuctionItemLink = itemLink
     currentAuctionItemID = itemId
 end
@@ -47,20 +52,8 @@ end
 local function ClearItemDisplay()
     ItemIcon:SetTexture(nil)
     ItemName:SetText("")
-    ClearItemButton:Hide()
-    BiddingButton:Disable()
-    Instructions:Show()
-    FKPDialog:UnregisterEvent(CHAT_EVENT_TYPE)
     currentAuctionItemLink = nil
     currentAuctionItemID = nil
-end
-
-local function GetFKP(playerName)
-    local fkp = FKPData[playerName]
-    if fkp == nil then
-        return 0
-    end
-    return fkp
 end
 
 local function AddBid(playerName)
@@ -68,7 +61,7 @@ local function AddBid(playerName)
     if bids[playerName] ~= nil then
         return
     end
-    bids[playerName] = GetFKP(playerName)
+    bids[playerName] = FKPHelper:GetFKP(playerName)
     Log(playerName .. " added to the bid list.")
 end
 
@@ -82,7 +75,7 @@ local function RemoveBid(playerName)
 end
 
 local function InitBidderList()
-    local sortedBids = {}
+    sortedBids = {}
     for name, fkp in pairs(bids) do
         table.insert(sortedBids, {name = name, fkp = fkp})
     end
@@ -139,24 +132,65 @@ local function InitBidderList()
     end
 end
 
+local function SetState(newState)
+    state = newState
+    FKPDialog:UnregisterEvent(CHAT_EVENT_TYPE)
+    if state == States.IDLE then
+	    ClearItemDisplay()
+        ClearItemButton:Hide()
+        BiddingButton:Disable()
+        Instructions:Show()
+        FKPDialog:UnregisterEvent(CHAT_EVENT_TYPE)
+        BiddingButtonText:SetText("Start Bidding")
+        bids = {}
+        InitBidderList()
+	elseif state == States.ITEM_SELECTED then
+	    ClearItemButton:Show()
+        BiddingButton:Enable()
+        Instructions:Hide()
+	elseif state == States.BIDDING_STARTED then
+        ClearItemButton:Hide()
+        FKPDialog:RegisterEvent(CHAT_EVENT_TYPE)
+        SendToRaid("BIDDING START: " .. currentAuctionItemLink)
+        BiddingButtonText:SetText("End Bidding")
+	elseif state == States.BIDDING_ENDED then 
+        FKPDialog:UnregisterEvent(CHAT_EVENT_TYPE)
+
+        BiddingButton:Disable()
+        ItemName:SetText("vv Select Winner vv")
+
+        -- flip all entries from remove to pick winner button
+        local existingFrames = {contentParent:GetChildren()}
+        for i = 1, #existingFrames do
+            local buttonName = "Button" .. i
+            local removeButton = _G[buttonName .. "RemoveButton"]
+            local winnerButton = _G[buttonName .. "WinnerButton"]
+
+            removeButton:Hide()
+            winnerButton:Show()
+            winnerButton:SetScript("OnClick", function(self, button, down)
+                FKPHelper:SpendFKP(sortedBids[i].name, FKP_ITEM_COST)
+                SetState(States.IDLE)
+            end)
+        end
+	end
+end
+
 -- BUTTON HANDLERS
 
 ClearItemButton:SetScript("OnClick", function(self, button, down)
-    ClearItemDisplay()
+    SetState(States.IDLE)
 end)
 
 BiddingButton:SetScript("OnClick", function(self, button, down)
-    if not biddingStarted then
-        FKPDialog:RegisterEvent(CHAT_EVENT_TYPE)
-        SendToRaid("BIDDING START: " .. currentAuctionItemLink)
-        biddingStarted = true
-        BiddingButton:SetText("End Bidding")
+    if state ~= States.BIDDING_STARTED then
+        SetState(States.BIDDING_STARTED)
         return
     end
 
 
-    SendToRaid(" BIDDERS ")
-    SendToRaid("=========")
+    SendToRaid("ROLL FOR " .. currentAuctionItemLink)
+    SendToRaid("======================")
 
     -- separate these so players get their whisper after the raid dump
 	local index = 0
@@ -172,6 +206,9 @@ BiddingButton:SetScript("OnClick", function(self, button, down)
         SendToPlayer("roll 1-" .. topEnd, name)
         index = index + 1
     end
+
+    SendToRaid("======================")
+    SetState(States.BIDDING_ENDED)
 end)
 
 FKPDialog:SetScript("OnEvent", function(self, event, ...)
@@ -194,7 +231,7 @@ FKPDialog:SetScript("OnEvent", function(self, event, ...)
 end)
 
 FKPDialog:SetScript("OnShow", function(self)
-    InitBidderList()
+    SetState(States.IDLE)
 end)
 
 FKPDialog:SetScript("OnMouseDown", function(self)
@@ -216,6 +253,7 @@ dropTargetFrame:SetScript("OnMouseDown", function(self, button)
     Log(cursorType .. itemId .. link)
     if cursorType == "item" then
         UpdateItemDisplay(itemId)
+        SetState(States.ITEM_SELECTED)
         ClearCursor() 
     end
 end)

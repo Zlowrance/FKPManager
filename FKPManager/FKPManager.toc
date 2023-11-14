@@ -8,6 +8,7 @@
 Globals.lua
 Logging.lua
 FKPData.lua
+FKPHelper.lua
 App.lua
 frames/FKPListTemplate.xml
 frames/FKPListTemplate.lua

@@ -64,6 +64,14 @@
 				<NormalTexture file="Interface\AddOns\FKPManager\assets\CloseButton.png" />
 				<PushedTexture file="Interface\AddOns\FKPManager\assets\CloseButton_Pushed.png" />
 			</Button>
+			<Button name="$parentWinnerButton" inherits="UIPanelCloseButton" hidden="true">
+				<Size x="30" y="30" />
+				<Anchors>
+					<Anchor x="-10" point="RIGHT" />
+				</Anchors>
+				<NormalTexture file="Interface\AddOns\FKPManager\assets\CheckButton.png" />
+				<PushedTexture file="Interface\AddOns\FKPManager\assets\CheckButton_Pushed.png" />
+			</Button>
 		</Frames>
 	</Frame>
 </Ui>

@@ -107,11 +107,12 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString inherits="GameFontWhiteShadowLarge" font="Fonts\FRIZQT___CYR.TTF" text="START BIDDING">
+						<FontString name="BiddingButtonText" inherits="GameFontWhiteShadowLarge" font="Fonts\FRIZQT___CYR.TTF" text="START BIDDING">
 							<Size x="163" y="30" />
 							<Anchors>
 								<Anchor point="CENTER" />
 							</Anchors>
+							<FontHeight val="16" />
 						</FontString>
 					</Layer>
 				</Layers>

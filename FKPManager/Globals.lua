@@ -3,6 +3,7 @@ DEBUG=true
 CHAT_TYPE_RAID = "SAY" -- RAID
 CHAT_EVENT_TYPE = "CHAT_MSG_".. CHAT_TYPE_RAID
 ADDON_NAME = "FKPManager"
+FKP_ITEM_COST = 10
 
 function ToUnqualifiedCharacterName(fullName)
     -- Find the position of the hyphen
@@ -54,4 +55,17 @@ function GetRaidMemberUnitIDFromName(name)
         end
     end
     return nil
+end
+
+function DumpTable(o)
+   if type(o) == 'table' then
+      local s = '{ '
+      for k,v in pairs(o) do
+         if type(k) ~= 'number' then k = '"'..k..'"' end
+         s = s .. '['..k..'] = ' .. DumpTable(v) .. ','
+      end
+      return s .. '} '
+   else
+      return tostring(o)
+   end
 end

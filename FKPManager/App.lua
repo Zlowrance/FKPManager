@@ -21,14 +21,18 @@ eventFrame:RegisterEvent("ADDON_LOADED")
 
 eventFrame:SetScript("OnEvent", function(self, event, arg1)
     if event == "ADDON_LOADED" and arg1 == ADDON_NAME then
-        FKPManagerData = FKPManagerData or {DataTimestamp = 0, FKPDeltas = {}}
+        if FKPManagerData == nil then
+		    FKPManagerData = {DataTimestamp = 0, FKPSpent = {}}
+		end
         
         if FKPManagerData.DataTimestamp < FKPDataLastUpdated then
             FKPManagerData.DataTimestamp = FKPDataLastUpdated
-            FKPManagerData.FKPDeltas = {}
+            FKPManagerData.FKPSpent = {}
+            Log("Data updated, cleared cache")
         end
      
         self:UnregisterEvent("ADDON_LOADED")  
-        Log("FKPManager loaded")
+        Log("FKPManager loaded: ")
+        Log(DumpTable(FKPManagerData))
     end
 end)
