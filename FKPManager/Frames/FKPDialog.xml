@@ -58,13 +58,32 @@
 		</Layers>
 		<Frames>
 			<ScrollFrame name="ScrollFrame1" inherits="UIPanelScrollFrameTemplate" clipChildren="true">
-				<Size x="200" y="302" />
 				<Anchors>
-					<Anchor y="-217" point="TOP" />
+					<Anchor x="25" y="-225" point="TOPLEFT" />
+					<Anchor x="-25" y="75" point="BOTTOMRIGHT" />
 				</Anchors>
 				<Backdrop bgFile="">
 					<Color r="1" g="1" b="1" />
 				</Backdrop>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="ScrollFrameBG" alpha="0.4" file="Interface\AddOns\FKPManager\assets\WhiteSquare.png" horizTile="true" vertTile="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
+							<Color />
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="Instructions" inherits="GameFontWhiteShadowLarge" text="Drag an item from your bags to the slot above then click Start Bidding to begin.">
+							<Size x="322" y="99" />
+							<Anchors>
+								<Anchor point="CENTER" />
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
 			</ScrollFrame>
 			<Button name="CloseButton" inherits="UIPanelCloseButton">
 				<Size x="50" y="50" />
@@ -93,7 +112,7 @@
 				<PushedTexture file="Interface\AddOns\FKPManager\assets\ButtonBG_Pushed.png" />
 				<DisabledTexture file="Interface\AddOns\FKPManager\assets\ButtonBG_Disabled.png" />
 			</Button>
-			<Button name="ClearItemButton" inherits="UIPanelCloseButton" hidden="true">
+			<Button name="ClearItemButton" inherits="UIPanelCloseButton" hidden="true" frameStrata="HIGH">
 				<Size x="25" y="25" />
 				<Anchors>
 					<Anchor x="-162" y="-117" point="TOPRIGHT" />

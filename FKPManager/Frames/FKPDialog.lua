@@ -21,7 +21,6 @@ dropTargetFrame:SetPoint("TOPLEFT", ItemIcon, "TOPLEFT")
 dropTargetFrame:SetPoint("BOTTOMRIGHT", ItemIcon, "BOTTOMRIGHT")
 FKPDialog:EnableMouse(true)
 FKPDialog:RegisterForDrag("LeftButton")
-dropTargetFrame:SetFrameStrata("HIGH")
 
 -- LOCAL FUNCTIONS
 
@@ -39,6 +38,7 @@ local function UpdateItemDisplay(itemId)
     ItemName:SetText(itemName)
     ClearItemButton:Show()
     BiddingButton:Enable()
+    Instructions:Hide()
 end
 
 local function ClearItemDisplay()
@@ -46,6 +46,7 @@ local function ClearItemDisplay()
     ItemName:SetText("")
     ClearItemButton:Hide()
     BiddingButton:Disable()
+    Instructions:Show()
 end
 
 local function GetFKP(playerName)
@@ -75,8 +76,6 @@ local function RemoveBid(playerName)
 end
 
 local function InitBidderList()
-    local buttonHeight = 80
-    
     local sortedBids = {}
     for name, fkp in pairs(bids) do
         table.insert(sortedBids, {name = name, fkp = fkp})
@@ -86,6 +85,8 @@ local function InitBidderList()
 
     local existingFrames = {contentParent:GetChildren()}
 
+    local buttonHeight = 80
+    local buttonSpacing = 5
     local index = 1
     for _, bid in ipairs(sortedBids) do
         local buttonName = "Button" .. index
@@ -97,7 +98,8 @@ local function InitBidderList()
             -- Create new button
             button = CreateFrame("Frame", buttonName, contentParent, "FKPListTemplate")
             button:SetSize(scrollWidth - 5, buttonHeight)
-            local yOffset = -buttonHeight * (index - 1)
+            -- Offset by amount of buttons + spacing + 1 for spacing at top of list
+            local yOffset = -buttonHeight * (index - 1) - buttonSpacing * (index)
             button:SetPoint("TOP", contentParent, "TOP", 0, yOffset)
             existingFrames[index] = button
         end
@@ -111,7 +113,7 @@ local function InitBidderList()
 
         local topEnd = GetTopEndRoll(index - 1)
         playerName:SetText(bid.name)
-        playerFKP:SetText(bid.fkp)
+        playerFKP:SetText(bid.fkp .. " FKP")
         playerRoll:SetText("rolls 1-" .. topEnd)
 
         local unitID = GetRaidMemberUnitIDFromName(bid.name)
