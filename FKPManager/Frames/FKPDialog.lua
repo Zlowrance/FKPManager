@@ -134,8 +134,6 @@ local function InitBidderList()
     -- Sort players by fkp
     table.sort(players, function(a, b) return a.fkp > b.fkp end)
 
-    local existingFrames = {contentParent:GetChildren()}
-
     for index, player in ipairs(players) do
         local button = player.frame or GetFKPListFrame()
         player.frame = button
@@ -229,6 +227,7 @@ local function SetState(newState)
                 for _, player in ipairs(players) do
                     ReleaseFKPListFrame(player.frame)
 				end
+                SendToRaid(player.name .. " wins " .. currentAuctionItemLink .. "!!")
                 SetState(States.IDLE)
             end)
 		end
