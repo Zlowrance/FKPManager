@@ -7,8 +7,7 @@ local States = {
 }
 local state = States.IDLE
 local players = {}
-local currentAuctionItemID = nil
-local currentAuctionItemLink =  nil
+local currentItem = {}
 local unusedFrames = {}
 local FKPFrameHeight = 60
 local FKPFrameSpacing = 5
@@ -85,15 +84,13 @@ local function UpdateItemDisplay(itemId)
     end
     ItemIcon:SetTexture(itemIcon)
     ItemName:SetText(itemLink)
-    currentAuctionItemLink = itemLink
-    currentAuctionItemID = itemId
+    currentItem = { id = itemId, link = itemLink }
 end
 
 local function ClearItemDisplay()
     ItemIcon:SetTexture(nil)
     ItemName:SetText("")
-    currentAuctionItemLink = nil
-    currentAuctionItemID = nil
+    currentItem = nil
 end
 
 local function AddBid(playerName)
@@ -200,7 +197,7 @@ local function SetState(newState)
 	elseif state == States.BIDDING_STARTED then
         ClearItemButton:Hide()
         SubscribeToChat()
-        SendToRaid("BIDDING START: " .. currentAuctionItemLink)
+        SendToRaid("BIDDING START: " .. currentItem.link)
         SendToRaid("TO BID SAY: " .. BID_MSG)
         BiddingButtonText:SetText("End Bidding")
 	elseif state == States.BIDDING_ENDED then 
@@ -227,7 +224,7 @@ local function SetState(newState)
                 for _, player in ipairs(players) do
                     ReleaseFKPListFrame(player.frame)
 				end
-                SendToRaid(player.name .. " wins " .. currentAuctionItemLink .. "!!")
+                SendToRaid(player.name .. " wins " .. currentItem.link .. "!!")
                 SetState(States.IDLE)
             end)
 		end
@@ -277,7 +274,7 @@ BiddingButton:SetScript("OnClick", function(self, button, down)
         return
     end
 
-    SendToRaid("ROLL FOR " .. currentAuctionItemLink)
+    SendToRaid("ROLL FOR " .. currentItem.link)
     SendToRaid("======================")
 
     -- separate these so players get their whisper after the raid dump
@@ -360,11 +357,11 @@ dropTargetFrame:SetScript("OnMouseDown", function(self, button)
 end)
 
 dropTargetFrame:SetScript("OnEnter", function(self)
-    if currentAuctionItemID == nil then
+    if currentItem == nil then
         return
     end
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:SetItemByID(currentAuctionItemID)
+    GameTooltip:SetItemByID(currentItem.id)
     GameTooltip:Show()
 end)
 
