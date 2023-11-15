@@ -23,8 +23,16 @@
 					</Gradient>
 				</Texture>
 			</Layer>
+			<Layer level="BORDER">
+				<Texture name="$parentPortraitBG" file="Interface\AddOns\FKPManager\assets\UnknownPlayer.png">
+					<Size x="60" y="60" />
+					<Anchors>
+						<Anchor point="LEFT" />
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer>
-				<Texture name="$parentPortrait">
+				<Texture name="$parentPortrait" file="Interface\AddOns\FKPManager\assets\UnknownPlayer.png">
 					<Size x="60" y="60" />
 					<Anchors>
 						<Anchor point="LEFT" />
@@ -35,7 +43,7 @@
 				<FontString name="$parentName" inherits="GameFontNormal" text="FontString2" justifyH="LEFT">
 					<Size x="195" y="20" />
 					<Anchors>
-						<Anchor x="75" point="TOPLEFT" />
+						<Anchor x="65" point="TOPLEFT" />
 						<Anchor x="-10" point="TOPRIGHT" />
 					</Anchors>
 				</FontString>
@@ -49,7 +57,7 @@
 				<FontString name="$parentRoll" inherits="QuestDifficulty_Trivial" text="FontString3">
 					<Size x="176" y="20" />
 					<Anchors>
-						<Anchor x="75" point="BOTTOMLEFT" />
+						<Anchor x="65" point="BOTTOMLEFT" />
 						<Anchor x="-10" point="BOTTOMRIGHT" />
 					</Anchors>
 				</FontString>

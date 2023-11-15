@@ -124,6 +124,8 @@ local function InitBidderList()
         local unitID = GetRaidMemberUnitIDFromName(bid.name)
         if unitID then
             SetPortraitTexture(playerPortrait, unitID)
+        else
+            playerPortrait:SetTexture(nil)
         end
 
         removeButton:SetScript("OnClick", function(self, button, down)
