@@ -4,7 +4,7 @@ AddOn for managing FKP item bids/rolls.
 
 - Download FKPManager.zip from latest release
 - Extract to AddOns directory
-- Double click FKPManager/download_fkp script to pull latest fkp from: https://docs.google.com/spreadsheets/d/1HMhajOv58CHcjiYH6hp1Qtd3HQeG7yySdtZX7iYte1Q/edit#gid=1912415391
+- Rightclick FKPManager/download_fkp and select Run with Powershell to pull latest fkp from: https://docs.google.com/spreadsheets/d/1HMhajOv58CHcjiYH6hp1Qtd3HQeG7yySdtZX7iYte1Q/edit#gid=1912415391
 - Once in-game type /fkp to begin
 
 
