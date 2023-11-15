@@ -52,6 +52,9 @@
     <Content Include="frames\FKPListTemplate.xml">
       <SubType>Frame</SubType>
     </Content>
+    <Content Include="FSM.lua">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Globals.lua">
       <SubType>Code</SubType>
     </Content>

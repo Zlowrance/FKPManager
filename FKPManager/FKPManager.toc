@@ -9,6 +9,7 @@ Globals.lua
 Logging.lua
 FKPData.lua
 FKPHelper.lua
+FSM.lua
 App.lua
 AnimationHelper.lua
 frames/FKPListTemplate.xml
