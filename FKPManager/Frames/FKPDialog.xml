@@ -75,7 +75,7 @@
 				</Backdrop>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="ScrollFrameBG" alpha="0.6" file="Interface\AddOns\FKPManager\assets\WhiteSquare.png" horizTile="true" vertTile="true">
+						<Texture name="ScrollFrameBG" alpha="0.6" file="Interface\AddOns\FKPManager\assets\WhiteSquare.png">
 							<Anchors>
 								<Anchor point="TOPLEFT" />
 								<Anchor point="BOTTOMRIGHT" />

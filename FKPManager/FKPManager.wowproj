@@ -26,7 +26,7 @@
     <Content Include="assets\CloseButton_Pushed.png" />
     <Content Include="assets\FadedBG.png" />
     <Content Include="assets\fkp logo.png" />
-    <Content Include="assets\UnknownPlayer.png" />
+    <Content Include="assets\WhiteCircle.png" />
     <Content Include="assets\WhiteSquare.png" />
     <Content Include="download_fkp.sh" />
     <Content Include="FKPData.lua">

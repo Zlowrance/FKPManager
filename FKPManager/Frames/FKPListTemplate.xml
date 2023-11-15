@@ -14,7 +14,7 @@
 				<Texture name="Background" file="Interface\AddOns\FKPManager\assets\WhiteSquare.png" alphaMode="DISABLE" horizTile="true" vertTile="true">
 					<Anchors>
 						<Anchor x="30" point="TOPLEFT" />
-						<Anchor point="BOTTOMRIGHT" />
+						<Anchor x="-30" point="BOTTOMRIGHT" />
 					</Anchors>
 					<Color r="1" g="0.753" b="0.753" />
 					<Gradient>
@@ -22,17 +22,27 @@
 						<MaxColor r="1" g="0.753" b="0.753" />
 					</Gradient>
 				</Texture>
+				<Texture name="EndCap" file="Interface\AddOns\FKPManager\assets\WhiteCircle.png">
+					<Size x="30" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" />
+						<Anchor point="BOTTOMRIGHT" />
+					</Anchors>
+					<TexCoords left="0.5" right="1" top="0" bottom="1" />
+					<Color r="1" g="0.753" b="0.753" />
+				</Texture>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture name="PortraitBG" file="Interface\AddOns\FKPManager\assets\UnknownPlayer.png">
-					<Size x="60" y="60" />
+				<Texture name="PortraitBG" file="Interface\AddOns\FKPManager\assets\WhiteCircle.png">
+					<Size x="60" />
 					<Anchors>
-						<Anchor point="LEFT" />
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMLEFT" />
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer>
-				<Texture name="Portrait" file="Interface\AddOns\FKPManager\assets\UnknownPlayer.png">
+				<Texture name="Portrait" file="Interface\AddOns\FKPManager\assets\WhiteCircle.png">
 					<Size x="60" y="60" />
 					<Anchors>
 						<Anchor point="LEFT" />

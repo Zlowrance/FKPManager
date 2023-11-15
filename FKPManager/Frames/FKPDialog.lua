@@ -14,7 +14,6 @@ local Events = {
 }
 
 local fsm = nil
-local state = States.IDLE
 local players = {}
 local currentItem = {}
 local unusedFrames = {}
