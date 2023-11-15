@@ -3,6 +3,14 @@ $CSV_FILE = "downloaded_sheet.csv"
 $LUA_FILE = "FKPData.lua"
 $CURRENT_TIMESTAMP = [int][double]::Parse((Get-Date (Get-Date).ToUniversalTime() -UFormat %s))
 
+# Create TextInfo object
+$textInfo = (Get-Culture).TextInfo
+
+# Function to convert to title case (capital first letter, rest lowercase)
+function ConvertToTitleCase($name) {
+    return $textInfo.ToTitleCase($name.ToLower())
+}
+
 # Define column names
 $characterColName = "Character"
 $fkpColName = "FKP"
@@ -33,7 +41,7 @@ $csvData = Get-Content $CSV_FILE | Select-Object -Skip 1
 $luaContent = @("FKPData = {")
 foreach ($line in $csvData) {
     $columns = $line -split ','
-    $character = $columns[$characterIndex].Trim('"')
+    $character = ConvertToTitleCase($columns[$characterIndex].Trim('"'))
     $fkp = $columns[$fkpIndex].Trim('"')
     if ($character -ne "") {
         $fkpValue = if ($fkp -eq "") { "0" } else { $fkp }
