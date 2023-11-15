@@ -6,9 +6,7 @@ local States = {
     BIDDING_ENDED = 4
 }
 local state = States.IDLE
-local bids = {}
-local sortedBids = {}
-local rolls = {}
+local players = {}
 local currentAuctionItemID = nil
 local currentAuctionItemLink =  nil
 
@@ -33,6 +31,23 @@ FKPDialog:EnableMouse(true)
 FKPDialog:RegisterForDrag("LeftButton")
 
 -- LOCAL FUNCTIONS
+
+local function GetPlayerIndex(playerName)
+    for i = 1, #players do
+        if players[i].name == playerName then
+		    return i
+		end
+	end
+    return nil
+end
+
+local function GetPlayerData(playerName)
+    local index = GetPlayerIndex(playerName)
+    if index == nil then
+	    return nil
+	end
+    return players[index]
+end
 
 local function GetTopEndRoll(index)
      return 100 - (math.min(index,5) * 10)
@@ -59,36 +74,32 @@ end
 
 local function AddBid(playerName)
     playerName = ToUnqualifiedCharacterName(playerName)
-    if bids[playerName] ~= nil then
+    if GetPlayerIndex(playerName) ~= nil then
         return
     end
-    bids[playerName] = FKPHelper:GetFKP(playerName)
+    table.insert(players, {name = playerName, fkp = FKPHelper:GetFKP(playerName), roll = nil})
     Log(playerName .. " added to the bid list.")
 end
 
 local function RemoveBid(playerName)
     playerName = ToUnqualifiedCharacterName(playerName)
-    if bids[playerName] == nil then
+	local playerIndex = GetPlayerIndex(playerName)
+    if playerIndex == nil then
         return
     end
-    bids[playerName] = nil
+    table.remove(players, playerIndex)
     Log(playerName .. " removed from the bid list.")
 end
 
 local function InitBidderList()
-    sortedBids = {}
-    for name, fkp in pairs(bids) do
-        table.insert(sortedBids, {name = name, fkp = fkp})
-    end
-    -- Sort the array by value in descending order
-    table.sort(sortedBids, function(a, b) return a.fkp > b.fkp end)
+    -- Sort players by fkp
+    table.sort(players, function(a, b) return a.fkp > b.fkp end)
 
     local existingFrames = {contentParent:GetChildren()}
 
     local buttonHeight = 60
     local buttonSpacing = 5
-    local index = 1
-    for _, bid in ipairs(sortedBids) do
+    for index, player in ipairs(players) do
         local buttonName = "Button" .. index
         local button
         if index <= #existingFrames then
@@ -104,7 +115,7 @@ local function InitBidderList()
             button:SetPoint("TOP", contentParent, "TOP", 0, yOffset)
             existingFrames[index] = button
         end
-        Log(bid.name .. bid.fkp)
+        Log(player.name .. player.fkp)
 
         local playerPortrait = _G[buttonName .. "Portrait"]
         local playerName = _G[buttonName .. "Name"]
@@ -117,11 +128,11 @@ local function InitBidderList()
         winnerButton:Hide()
 
         local topEnd = GetTopEndRoll(index - 1)
-        playerName:SetText(bid.name)
-        playerFKP:SetText(bid.fkp .. " FKP")
+        playerName:SetText(player.name)
+        playerFKP:SetText(player.fkp .. " FKP")
         playerRoll:SetText("rolls 1-" .. topEnd)
 
-        local unitID = GetRaidMemberUnitIDFromName(bid.name)
+        local unitID = GetRaidMemberUnitIDFromName(player.name)
         if unitID then
             SetPortraitTexture(playerPortrait, unitID)
         else
@@ -129,10 +140,9 @@ local function InitBidderList()
         end
 
         removeButton:SetScript("OnClick", function(self, button, down)
-            RemoveBid(bid.name)
+            RemoveBid(players[index].name)
             InitBidderList()
         end)
-        index = index + 1
     end
     -- hide remaining frames if there are any
     for i = index, #existingFrames do
@@ -162,8 +172,7 @@ local function SetState(newState)
         BiddingButton:Disable()
         Instructions:Show()
         BiddingButtonText:SetText("Start Bidding")
-        bids = {}
-        rolls = {}
+        players = {}
         InitBidderList()
 	elseif state == States.ITEM_SELECTED then
 	    ClearItemButton:Show()
@@ -176,7 +185,7 @@ local function SetState(newState)
         SendToRaid("TO BID SAY: " .. BID_MSG)
         BiddingButtonText:SetText("End Bidding")
 	elseif state == States.BIDDING_ENDED then 
-        if #sortedBids == 0 then
+        if #players == 0 then
 		    SetState(States.IDLE)
 			return
 		end
@@ -197,7 +206,7 @@ local function SetState(newState)
             winnerButton:Show()
 
             winnerButton:SetScript("OnClick", function(self, button, down)
-                FKPHelper:SpendFKP(sortedBids[i].name, FKP_ITEM_COST)
+                FKPHelper:SpendFKP(players[i].name, FKP_ITEM_COST)
                 SetState(States.IDLE)
             end)
         end
@@ -208,28 +217,31 @@ local function SetState(newState)
 end
 
 local function SetPlayerRoll(playerName, roll, topEnd)
-    if rolls[playerName] ~= nil then
+    local playerIndex = GetPlayerIndex(playerName)
+    if playerIndex == nil then
+	    Log(playerName .. " tried to roll but they aren't in the list")
+	    return
+	end
+    local player = GetPlayerData(playerName)
+    if player.roll ~= nil then
         Log(playerName .. " tried to roll again")
 	    return
 	end
-    local existingFrames = {contentParent:GetChildren()}
-    for i = 1, #existingFrames do
-        if sortedBids[i].name == playerName then
-            local targetTopEnd = tostring(GetTopEndRoll(i - 1))
+    local targetTopEnd = tostring(GetTopEndRoll(playerIndex - 1))
 
-            if topEnd ~= targetTopEnd then  
-			    SendToRaid(playerName .. " ROLLED OUT OF " .. topEnd .. " INSTEAD OF " .. targetTopEnd .. "!! SHAME!!")
-                return
-			end
+    if topEnd ~= targetTopEnd then  
+		SendToRaid(playerName .. " ROLLED OUT OF " .. topEnd .. " INSTEAD OF " .. targetTopEnd .. "!! SHAME!!")
+        return
+	end
 
-            rolls[playerName] = roll
+    player.roll = roll
 
-            local buttonName = "Button" .. i
-            local playerRoll = _G[buttonName .. "Roll"]
+    local buttonName = "Button" .. playerIndex
+    local playerRoll = _G[buttonName .. "Roll"]
 
-            playerRoll:SetText("Rolled " .. roll)
-		end
-    end
+    playerRoll:SetText("Rolled " .. roll)
+
+    -- table.sort(players, function(a, b) return a.roll or 0 > b.roll end)
 end
 
 -- BUTTON HANDLERS
@@ -249,16 +261,16 @@ BiddingButton:SetScript("OnClick", function(self, button, down)
 
     -- separate these so players get their whisper after the raid dump
 	local index = 0
-    for name, _ in pairs(bids) do
+    for _, player in ipairs(players) do
         local topEnd = GetTopEndRoll(index)
-        SendToRaid("1-" .. topEnd .. "  " .. name)
+        SendToRaid("1-" .. topEnd .. "  " .. player.name)
         index = index + 1
     end
 
     index = 0
-    for name, _ in pairs(bids) do
+    for _, player in ipairs(players) do
         local topEnd = GetTopEndRoll(index)
-        SendToPlayer("roll 1-" .. topEnd, name)
+        SendToPlayer("roll 1-" .. topEnd, player.name)
         index = index + 1
     end
 
