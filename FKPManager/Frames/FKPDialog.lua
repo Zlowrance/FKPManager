@@ -9,6 +9,9 @@ local state = States.IDLE
 local players = {}
 local currentAuctionItemID = nil
 local currentAuctionItemLink =  nil
+local unusedFrames = {}
+local FKPFrameHeight = 60
+local FKPFrameSpacing = 5
 
 -- INITIALIZATION
 FKPDialog:SetMovable(true)
@@ -49,6 +52,27 @@ local function GetPlayerData(playerName)
     return players[index]
 end
 
+local function GetFKPListFrame()
+	if #unusedFrames > 0 then
+        -- Reuse existing button
+        button = table.remove(unusedFrames, 1)
+    else
+        -- Create new button
+        button = CreateFrame("Frame", "FKPFrame", contentParent, "FKPListTemplate")
+        button:SetSize(scrollWidth - 5, FKPFrameHeight)
+    end
+    button:Show()
+	return button
+end
+
+local function ReleaseFKPListFrame(frame)
+    if frame == nil then
+	    return
+	end
+    frame:Hide()
+    table.insert(unusedFrames, frame)
+end
+
 local function GetTopEndRoll(index)
      return 100 - (math.min(index,5) * 10)
 end
@@ -87,8 +111,23 @@ local function RemoveBid(playerName)
     if playerIndex == nil then
         return
     end
+    local player = players[playerIndex]
+    if player.frame ~= nil then
+        ReleaseFKPListFrame(player.frame)
+        player.frame = nil
+	end
     table.remove(players, playerIndex)
     Log(playerName .. " removed from the bid list.")
+end
+
+local function LayoutBidderList()
+    for i, player in ipairs(players) do
+        local button = player.frame
+        local playerName = GetChildOfFrame(button, "Name")
+        local playerIndex = GetPlayerIndex(playerName:GetText())
+        local yOffset = -button:GetHeight() * (playerIndex - 1) - FKPFrameSpacing * (playerIndex)
+        button:SetPoint("TOP", contentParent, "TOP", 0, yOffset)
+	end
 end
 
 local function InitBidderList()
@@ -97,33 +136,16 @@ local function InitBidderList()
 
     local existingFrames = {contentParent:GetChildren()}
 
-    local buttonHeight = 60
-    local buttonSpacing = 5
-    local index = 1
-    for _, player in ipairs(players) do
-        local buttonName = "Button" .. index
-        local button
-        if index <= #existingFrames then
-            -- Reuse existing button
-            button = existingFrames[index]
-            button:Show()
-        else
-            -- Create new button
-            button = CreateFrame("Frame", buttonName, contentParent, "FKPListTemplate")
-            button:SetSize(scrollWidth - 5, buttonHeight)
-            -- Offset by amount of buttons + spacing + 1 for spacing at top of list
-            local yOffset = -buttonHeight * (index - 1) - buttonSpacing * (index)
-            button:SetPoint("TOP", contentParent, "TOP", 0, yOffset)
-            existingFrames[index] = button
-        end
+    for index, player in ipairs(players) do
+        local button = player.frame or GetFKPListFrame()
         player.frame = button
 
-        local playerPortrait = _G[buttonName .. "Portrait"]
-        local playerName = _G[buttonName .. "Name"]
-        local playerFKP = _G[buttonName .. "FKP"]
-        local playerRoll = _G[buttonName .. "Roll"]
-        local removeButton = _G[buttonName .. "RemoveButton"]
-        local winnerButton = _G[buttonName .. "WinnerButton"]
+        local playerPortrait = GetChildOfFrame(button, "Portrait")
+        local playerName = GetChildOfFrame(button, "Name")
+        local playerFKP = GetChildOfFrame(button, "FKP")
+        local playerRoll = GetChildOfFrame(button, "Roll")
+        local removeButton = GetChildOfFrame(button, "RemoveButton")
+        local winnerButton = GetChildOfFrame(button, "WinnerButton")
 
         removeButton:Show()
         winnerButton:Hide()
@@ -144,33 +166,9 @@ local function InitBidderList()
             RemoveBid(player.name)
             InitBidderList()
         end)
-        index = index + 1
-    end
-    -- hide remaining frames if there are any
-    for i = index, #existingFrames do
-        existingFrames[i]:Hide()
-    end
-end
-
-local function LayoutBidderList()
-    -- remove all frames from parent
-    local existingFrames = {contentParent:GetChildren()}
-    for i = 1, #existingFrames do
-        local buttonName = "Button" .. i
-        local button = _G[buttonName]
-        button:SetParent(nil)
     end
 
-    -- re-add them in order
-    for i, player in ipairs(players) do
-        local buttonName = player.frame:GetName()
-        local button = _G[buttonName]
-        button:SetParent(contentParent)
-        local playerName = _G[buttonName .. "Name"]
-        local playerIndex = GetPlayerIndex(playerName:GetText())
-        local yOffset = -button:GetHeight() * (playerIndex - 1) - 5 * (playerIndex)
-        button:SetPoint("TOP", contentParent, "TOP", 0, yOffset)
-	end
+    LayoutBidderList()
 end
 
 local function SubscribeToChat()
@@ -217,10 +215,9 @@ local function SetState(newState)
 
         -- flip all entries from remove to pick winner button
         for i, player in ipairs(players) do
-            local buttonName = player.frame:GetName()
-            local removeButton = _G[buttonName .. "RemoveButton"]
-            local winnerButton = _G[buttonName .. "WinnerButton"]
-            local playerRoll = _G[buttonName .. "Roll"]
+            local removeButton = GetChildOfFrame(player.frame, "RemoveButton")
+            local winnerButton = GetChildOfFrame(player.frame, "WinnerButton")
+            local playerRoll = GetChildOfFrame(player.frame, "Roll")
 
             playerRoll:SetText("Awaiting Roll...")
 
@@ -229,6 +226,9 @@ local function SetState(newState)
 
             winnerButton:SetScript("OnClick", function(self, button, down)
                 FKPHelper:SpendFKP(player.name, FKP_ITEM_COST)
+                for _, player in ipairs(players) do
+                    ReleaseFKPListFrame(player.frame)
+				end
                 SetState(States.IDLE)
             end)
 		end
@@ -258,8 +258,7 @@ local function SetPlayerRoll(playerName, roll, topEnd)
 
     player.roll = roll
 
-    local buttonName = "Button" .. playerIndex
-    local playerRoll = _G[buttonName .. "Roll"]
+    local playerRoll = GetChildOfFrame(player.frame, "Roll")
 
     playerRoll:SetText("Rolled " .. roll)
 

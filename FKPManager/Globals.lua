@@ -41,7 +41,16 @@ function ShowError(message)
 end
 
 function GetChildOfFrame(parentFrame, childName)
+    -- Log("searching " .. parentFrame:GetName() .. " for " .. childName)
     for _, child in ipairs({parentFrame:GetChildren()}) do
+        -- Log(">> " .. child:GetName())
+        if child:GetName() == childName then
+            return child
+        end
+    end
+
+    for _, child in ipairs({parentFrame:GetRegions()}) do
+        -- Log(">> " .. child:GetName())
         if child:GetName() == childName then
             return child
         end
