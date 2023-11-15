@@ -77,7 +77,7 @@ local function AddBid(playerName)
     if GetPlayerIndex(playerName) ~= nil then
         return
     end
-    table.insert(players, {name = playerName, fkp = FKPHelper:GetFKP(playerName), roll = nil})
+    table.insert(players, {name = playerName, fkp = FKPHelper:GetFKP(playerName), roll = 0, frame = nil})
     Log(playerName .. " added to the bid list.")
 end
 
@@ -99,7 +99,8 @@ local function InitBidderList()
 
     local buttonHeight = 60
     local buttonSpacing = 5
-    for index, player in ipairs(players) do
+    local index = 1
+    for _, player in ipairs(players) do
         local buttonName = "Button" .. index
         local button
         if index <= #existingFrames then
@@ -115,7 +116,7 @@ local function InitBidderList()
             button:SetPoint("TOP", contentParent, "TOP", 0, yOffset)
             existingFrames[index] = button
         end
-        Log(player.name .. player.fkp)
+        player.frame = button
 
         local playerPortrait = _G[buttonName .. "Portrait"]
         local playerName = _G[buttonName .. "Name"]
@@ -140,14 +141,36 @@ local function InitBidderList()
         end
 
         removeButton:SetScript("OnClick", function(self, button, down)
-            RemoveBid(players[index].name)
+            RemoveBid(player.name)
             InitBidderList()
         end)
+        index = index + 1
     end
     -- hide remaining frames if there are any
     for i = index, #existingFrames do
         existingFrames[i]:Hide()
     end
+end
+
+local function LayoutBidderList()
+    -- remove all frames from parent
+    local existingFrames = {contentParent:GetChildren()}
+    for i = 1, #existingFrames do
+        local buttonName = "Button" .. i
+        local button = _G[buttonName]
+        button:SetParent(nil)
+    end
+
+    -- re-add them in order
+    for i, player in ipairs(players) do
+        local buttonName = player.frame:GetName()
+        local button = _G[buttonName]
+        button:SetParent(contentParent)
+        local playerName = _G[buttonName .. "Name"]
+        local playerIndex = GetPlayerIndex(playerName:GetText())
+        local yOffset = -button:GetHeight() * (playerIndex - 1) - 5 * (playerIndex)
+        button:SetPoint("TOP", contentParent, "TOP", 0, yOffset)
+	end
 end
 
 local function SubscribeToChat()
@@ -193,9 +216,8 @@ local function SetState(newState)
         ItemName:SetText("vv Select Winner vv")
 
         -- flip all entries from remove to pick winner button
-        local existingFrames = {contentParent:GetChildren()}
-        for i = 1, #existingFrames do
-            local buttonName = "Button" .. i
+        for i, player in ipairs(players) do
+            local buttonName = player.frame:GetName()
             local removeButton = _G[buttonName .. "RemoveButton"]
             local winnerButton = _G[buttonName .. "WinnerButton"]
             local playerRoll = _G[buttonName .. "Roll"]
@@ -206,10 +228,10 @@ local function SetState(newState)
             winnerButton:Show()
 
             winnerButton:SetScript("OnClick", function(self, button, down)
-                FKPHelper:SpendFKP(players[i].name, FKP_ITEM_COST)
+                FKPHelper:SpendFKP(player.name, FKP_ITEM_COST)
                 SetState(States.IDLE)
             end)
-        end
+		end
 
         -- register to chat msgs to monitor rolls
         FKPDialog:RegisterEvent("CHAT_MSG_SYSTEM")
@@ -223,11 +245,11 @@ local function SetPlayerRoll(playerName, roll, topEnd)
 	    return
 	end
     local player = GetPlayerData(playerName)
-    if player.roll ~= nil then
+    if player.roll > 0 then
         Log(playerName .. " tried to roll again")
 	    return
 	end
-    local targetTopEnd = tostring(GetTopEndRoll(playerIndex - 1))
+    local targetTopEnd = GetTopEndRoll(playerIndex - 1)
 
     if topEnd ~= targetTopEnd then  
 		SendToRaid(playerName .. " ROLLED OUT OF " .. topEnd .. " INSTEAD OF " .. targetTopEnd .. "!! SHAME!!")
@@ -241,7 +263,8 @@ local function SetPlayerRoll(playerName, roll, topEnd)
 
     playerRoll:SetText("Rolled " .. roll)
 
-    -- table.sort(players, function(a, b) return a.roll or 0 > b.roll end)
+    table.sort(players, function(a, b) return a.roll > b.roll end)
+    LayoutBidderList()
 end
 
 -- BUTTON HANDLERS
@@ -282,7 +305,7 @@ FKPDialog:SetScript("OnEvent", function(self, event, message, playerName)
     if event == "CHAT_MSG_SYSTEM" then
         local player, roll, minRoll, maxRoll = string.match(message, "(.+) rolls (%d+) %((%d+)-(%d+)%)")
         if player and roll and minRoll and maxRoll then
-            SetPlayerRoll(player, roll, maxRoll)
+            SetPlayerRoll(player, tonumber(roll), tonumber(maxRoll))
         end
         return
     end
