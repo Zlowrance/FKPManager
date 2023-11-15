@@ -14,7 +14,7 @@ Invoke-WebRequest -Uri $SHEET_URL -OutFile $CSV_FILE
 $initialLines = Get-Content $CSV_FILE -Encoding UTF8 | Select-Object -First 5
 $mergedHeader = $initialLines -join ""
 
-# Process the rest of the CSV file starting from line 4
+# Process the rest of the CSV file
 $csvData = Get-Content $CSV_FILE -Encoding UTF8 | Select-Object -Skip 5
 
 # Combine the corrected header with the rest of the data
