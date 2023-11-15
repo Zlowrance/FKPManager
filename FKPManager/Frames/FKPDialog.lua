@@ -20,6 +20,7 @@ local currentItem = {}
 local unusedFrames = {}
 local FKPFrameHeight = 60
 local FKPFrameSpacing = 5
+local initialized = false
 
 -- INITIALIZATION
 FKPDialog:SetMovable(true)
@@ -265,25 +266,6 @@ local function BIDDING_STARTED_Enter(fsm)
 end
 
 local function BIDDING_STARTED_BID_BUTTON_PRESS(fsm)
-    SendToRaid("ROLL FOR " .. currentItem.link)
-    SendToRaid("======================")
-
-    -- separate these so players get their whisper after the raid dump
-	local index = 0
-    for _, player in ipairs(players) do
-        local topEnd = GetTopEndRoll(index)
-        SendToRaid("1-" .. topEnd .. "  " .. player.name)
-        index = index + 1
-    end
-
-    index = 0
-    for _, player in ipairs(players) do
-        local topEnd = GetTopEndRoll(index)
-        SendToPlayer("roll 1-" .. topEnd, player.name)
-        index = index + 1
-    end
-
-    SendToRaid("======================")
     fsm:setState(States.BIDDING_ENDED)
 end
 
@@ -305,6 +287,27 @@ local function BIDDING_ENDED_Enter(fsm)
 		fsm:setState(States.IDLE)
 		return
 	end
+
+    -- Send status to chat and players
+    SendToRaid("ROLL FOR " .. currentItem.link)
+    SendToRaid("======================")
+
+    -- separate these so players get their whisper after the raid dump
+	local index = 0
+    for _, player in ipairs(players) do
+        local topEnd = GetTopEndRoll(index)
+        SendToRaid("1-" .. topEnd .. "  " .. player.name)
+        index = index + 1
+    end
+
+    index = 0
+    for _, player in ipairs(players) do
+        local topEnd = GetTopEndRoll(index)
+        SendToPlayer("roll 1-" .. topEnd, player.name)
+        index = index + 1
+    end
+    SendToRaid("======================")
+
     BiddingButton:Disable()
     ItemName:SetText("vv Select Winner vv")
 
@@ -370,39 +373,11 @@ FKPDialog:SetScript("OnEvent", function(self, event, message, playerName)
 end)
 
 FKPDialog:SetScript("OnShow", function(self)
-    local states = {
-        [States.IDLE] = {
-            enter = IDLE_Enter,
-            events = {
-                [Events.ITEM_AREA_CLICKED] = IDLE_ITEM_AREA_CLICKED
-            }
-        },
-        [States.ITEM_SELECTED] = {
-            enter = ITEM_SELECTED_Enter,
-            events = {
-			    [Events.BID_BUTTON_PRESS] = ITEM_SELECTED_BID_BUTTON_PRESS
-			}
-        },
-        [States.BIDDING_STARTED] = {
-            enter = BIDDING_STARTED_Enter,
-			events = {
-			    [Events.BID_BUTTON_PRESS] = BIDDING_STARTED_BID_BUTTON_PRESS,
-                [Events.CHAT_MSG_RECEIVED] = BIDDING_STARTED_CHAT_MSG_RECEIVED
-			}
-        },
-        [States.BIDDING_ENDED] = {
-            enter = BIDDING_ENDED_Enter,
-            events = {
-			    [Events.SYSTEM_MSG_RECEIVED] = BIDDING_ENDED_SYSTEM_MSG_RECEIVED
-			}
-        },
-	}
-    fsm = FSM:new(states)
+    if initialized then
+        return
+    end
     fsm:setState(States.IDLE)
-end)
-
-FKPDialog:SetScript("OnHide", function(self)
-    fsm:setState(States.IDLE)
+    initialized = true
 end)
 
 FKPDialog:SetScript("OnMouseDown", function(self)
@@ -429,3 +404,34 @@ end)
 dropTargetFrame:SetScript("OnLeave", function(self)
     GameTooltip:Hide()
 end)
+
+-- FSM SETUP
+
+local states = {
+    [States.IDLE] = {
+        enter = IDLE_Enter,
+        events = {
+            [Events.ITEM_AREA_CLICKED] = IDLE_ITEM_AREA_CLICKED
+        }
+    },
+    [States.ITEM_SELECTED] = {
+        enter = ITEM_SELECTED_Enter,
+        events = {
+			[Events.BID_BUTTON_PRESS] = ITEM_SELECTED_BID_BUTTON_PRESS
+		}
+    },
+    [States.BIDDING_STARTED] = {
+        enter = BIDDING_STARTED_Enter,
+		events = {
+			[Events.BID_BUTTON_PRESS] = BIDDING_STARTED_BID_BUTTON_PRESS,
+            [Events.CHAT_MSG_RECEIVED] = BIDDING_STARTED_CHAT_MSG_RECEIVED
+		}
+    },
+    [States.BIDDING_ENDED] = {
+        enter = BIDDING_ENDED_Enter,
+        events = {
+			[Events.SYSTEM_MSG_RECEIVED] = BIDDING_ENDED_SYSTEM_MSG_RECEIVED
+		}
+    },
+}
+fsm = FSM:new(states)
