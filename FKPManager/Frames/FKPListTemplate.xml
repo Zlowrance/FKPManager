@@ -1,7 +1,7 @@
 <Ui xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="FKPListTemplate.lua" />
 	<Frame name="FKPListTemplate" virtual="true">
-		<Size x="283" y="80" />
+		<Size x="283" y="60" />
 		<Anchors>
 			<Anchor point="CENTER" />
 		</Anchors>
@@ -11,9 +11,9 @@
 		</Backdrop>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture file="Interface\AddOns\FKPManager\assets\WhiteSquare.png" alphaMode="DISABLE" horizTile="true" vertTile="true">
+				<Texture name="$parentBackground" file="Interface\AddOns\FKPManager\assets\WhiteSquare.png" alphaMode="DISABLE" horizTile="true" vertTile="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" />
+						<Anchor x="30" point="TOPLEFT" />
 						<Anchor point="BOTTOMRIGHT" />
 					</Anchors>
 					<Color r="1" g="0.753" b="0.753" />
@@ -25,9 +25,9 @@
 			</Layer>
 			<Layer>
 				<Texture name="$parentPortrait">
-					<Size x="64" y="64" />
+					<Size x="60" y="60" />
 					<Anchors>
-						<Anchor x="5" point="LEFT" />
+						<Anchor point="LEFT" />
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -35,8 +35,8 @@
 				<FontString name="$parentName" inherits="GameFontNormal" text="FontString2" justifyH="LEFT">
 					<Size x="195" y="20" />
 					<Anchors>
-						<Anchor x="75" y="-10" point="TOPLEFT" />
-						<Anchor x="-10" y="-10" point="TOPRIGHT" />
+						<Anchor x="75" point="TOPLEFT" />
+						<Anchor x="-10" point="TOPRIGHT" />
 					</Anchors>
 				</FontString>
 				<FontString name="$parentFKP" inherits="GameFontWhiteShadowLarge" text="FontString3" justifyH="LEFT">
@@ -49,8 +49,8 @@
 				<FontString name="$parentRoll" inherits="QuestDifficulty_Trivial" text="FontString3">
 					<Size x="176" y="20" />
 					<Anchors>
-						<Anchor x="75" y="10" point="BOTTOMLEFT" />
-						<Anchor x="-10" y="10" point="BOTTOMRIGHT" />
+						<Anchor x="75" point="BOTTOMLEFT" />
+						<Anchor x="-10" point="BOTTOMRIGHT" />
 					</Anchors>
 				</FontString>
 			</Layer>

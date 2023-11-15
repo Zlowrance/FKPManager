@@ -8,6 +8,7 @@ local States = {
 local state = States.IDLE
 local bids = {}
 local sortedBids = {}
+local rolls = {}
 local currentAuctionItemID = nil
 local currentAuctionItemLink =  nil
 
@@ -84,7 +85,7 @@ local function InitBidderList()
 
     local existingFrames = {contentParent:GetChildren()}
 
-    local buttonHeight = 80
+    local buttonHeight = 60
     local buttonSpacing = 5
     local index = 1
     for _, bid in ipairs(sortedBids) do
@@ -152,6 +153,7 @@ end
 local function SetState(newState)
     state = newState
     UnsubscribeToChat()
+    FKPDialog:UnregisterEvent("CHAT_MSG_SYSTEM")
     if state == States.IDLE then
 	    ClearItemDisplay()
         ClearItemButton:Hide()
@@ -159,6 +161,7 @@ local function SetState(newState)
         Instructions:Show()
         BiddingButtonText:SetText("Start Bidding")
         bids = {}
+        rolls = {}
         InitBidderList()
 	elseif state == States.ITEM_SELECTED then
 	    ClearItemButton:Show()
@@ -168,8 +171,13 @@ local function SetState(newState)
         ClearItemButton:Hide()
         SubscribeToChat()
         SendToRaid("BIDDING START: " .. currentAuctionItemLink)
+        SendToRaid("TO BID SAY: " .. BID_MSG)
         BiddingButtonText:SetText("End Bidding")
 	elseif state == States.BIDDING_ENDED then 
+        if #sortedBids == 0 then
+		    SetState(States.IDLE)
+			return
+		end
         BiddingButton:Disable()
         ItemName:SetText("vv Select Winner vv")
 
@@ -179,6 +187,9 @@ local function SetState(newState)
             local buttonName = "Button" .. i
             local removeButton = _G[buttonName .. "RemoveButton"]
             local winnerButton = _G[buttonName .. "WinnerButton"]
+            local playerRoll = _G[buttonName .. "Roll"]
+
+            playerRoll:SetText("Awaiting Roll...")
 
             removeButton:Hide()
             winnerButton:Show()
@@ -188,7 +199,35 @@ local function SetState(newState)
                 SetState(States.IDLE)
             end)
         end
+
+        -- register to chat msgs to monitor rolls
+        FKPDialog:RegisterEvent("CHAT_MSG_SYSTEM")
 	end
+end
+
+local function SetPlayerRoll(playerName, roll, topEnd)
+    if rolls[playerName] ~= nil then
+        Log(playerName .. " tried to roll again")
+	    return
+	end
+    local existingFrames = {contentParent:GetChildren()}
+    for i = 1, #existingFrames do
+        if sortedBids[i].name == playerName then
+            local targetTopEnd = tostring(GetTopEndRoll(i - 1))
+
+            if topEnd ~= targetTopEnd then  
+			    SendToRaid(playerName .. " ROLLED OUT OF " .. topEnd .. " INSTEAD OF " .. targetTopEnd .. "!! SHAME!!")
+                return
+			end
+
+            rolls[playerName] = roll
+
+            local buttonName = "Button" .. i
+            local playerRoll = _G[buttonName .. "Roll"]
+
+            playerRoll:SetText("Rolled " .. roll)
+		end
+    end
 end
 
 -- BUTTON HANDLERS
@@ -202,7 +241,6 @@ BiddingButton:SetScript("OnClick", function(self, button, down)
         SetState(States.BIDDING_STARTED)
         return
     end
-
 
     SendToRaid("ROLL FOR " .. currentAuctionItemLink)
     SendToRaid("======================")
@@ -226,12 +264,18 @@ BiddingButton:SetScript("OnClick", function(self, button, down)
     SetState(States.BIDDING_ENDED)
 end)
 
-FKPDialog:SetScript("OnEvent", function(self, event, ...)
+FKPDialog:SetScript("OnEvent", function(self, event, message, playerName)
+    if event == "CHAT_MSG_SYSTEM" then
+        local player, roll, minRoll, maxRoll = string.match(message, "(.+) rolls (%d+) %((%d+)-(%d+)%)")
+        if player and roll and minRoll and maxRoll then
+            SetPlayerRoll(player, roll, maxRoll)
+        end
+        return
+    end
+
     for i = 1, #CHAT_EVENT_TYPES do
         if event == CHAT_EVENT_TYPES[i] then
-            local message, playerName = ...
-
-            if not string.match(message, "%f[%a]bid%f[%A]") then
+            if not string.match(message, "^" .. BID_MSG .. "$") then
                 if DEBUG then
                     local testBidName = string.match(message, "testbid (%a+)")
                     if testBidName then

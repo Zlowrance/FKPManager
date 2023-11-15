@@ -23,6 +23,7 @@
 						<Anchor point="BOTTOMRIGHT" />
 					</Anchors>
 					<TexCoords left="0" right="1" top="0" bottom="1" />
+					<Color r="1" g="1" b="1" />
 				</Texture>
 			</Layer>
 			<Layer level="BORDER">
@@ -32,7 +33,7 @@
 						<Anchor y="-115" point="TOP" />
 					</Anchors>
 				</Texture>
-				<Texture name="ItemNameBG" alpha="0.75" file="Interface\AddOns\FKPManager\assets\FadedBG.png">
+				<Texture name="ItemNameBG" alpha="0.6" file="Interface\AddOns\FKPManager\assets\FadedBG.png">
 					<Size x="200" y="20" />
 					<Anchors>
 						<Anchor x="100" y="-190" point="TOPLEFT" />
@@ -74,7 +75,7 @@
 				</Backdrop>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="ScrollFrameBG" alpha="0.4" file="Interface\AddOns\FKPManager\assets\WhiteSquare.png" horizTile="true" vertTile="true">
+						<Texture name="ScrollFrameBG" alpha="0.6" file="Interface\AddOns\FKPManager\assets\WhiteSquare.png" horizTile="true" vertTile="true">
 							<Anchors>
 								<Anchor point="TOPLEFT" />
 								<Anchor point="BOTTOMRIGHT" />
