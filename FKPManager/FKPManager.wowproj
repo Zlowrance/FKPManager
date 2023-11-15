@@ -10,6 +10,9 @@
     <OutputPath>.</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="AnimationHelper.lua">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="App.lua">
       <SubType>Code</SubType>
     </Content>

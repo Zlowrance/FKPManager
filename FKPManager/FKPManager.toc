@@ -10,6 +10,7 @@ Logging.lua
 FKPData.lua
 FKPHelper.lua
 App.lua
+AnimationHelper.lua
 frames/FKPListTemplate.xml
 frames/FKPListTemplate.lua
 frames/FKPDialog.xml

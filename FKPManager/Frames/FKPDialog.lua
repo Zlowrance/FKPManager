@@ -110,6 +110,10 @@ local function InitBidderList()
         local playerFKP = _G[buttonName .. "FKP"]
         local playerRoll = _G[buttonName .. "Roll"]
         local removeButton = _G[buttonName .. "RemoveButton"]
+        local winnerButton = _G[buttonName .. "WinnerButton"]
+
+        removeButton:Show()
+        winnerButton:Hide()
 
         local topEnd = GetTopEndRoll(index - 1)
         playerName:SetText(bid.name)
@@ -133,15 +137,26 @@ local function InitBidderList()
     end
 end
 
+local function SubscribeToChat()
+    for i = 1, #CHAT_EVENT_TYPES do
+         FKPDialog:RegisterEvent(CHAT_EVENT_TYPES[i])
+	end
+end
+
+local function UnsubscribeToChat()
+    for i = 1, #CHAT_EVENT_TYPES do
+         FKPDialog:UnregisterEvent(CHAT_EVENT_TYPES[i])
+	end
+end
+
 local function SetState(newState)
     state = newState
-    FKPDialog:UnregisterEvent(CHAT_EVENT_TYPE)
+    UnsubscribeToChat()
     if state == States.IDLE then
 	    ClearItemDisplay()
         ClearItemButton:Hide()
         BiddingButton:Disable()
         Instructions:Show()
-        FKPDialog:UnregisterEvent(CHAT_EVENT_TYPE)
         BiddingButtonText:SetText("Start Bidding")
         bids = {}
         InitBidderList()
@@ -151,12 +166,10 @@ local function SetState(newState)
         Instructions:Hide()
 	elseif state == States.BIDDING_STARTED then
         ClearItemButton:Hide()
-        FKPDialog:RegisterEvent(CHAT_EVENT_TYPE)
+        SubscribeToChat()
         SendToRaid("BIDDING START: " .. currentAuctionItemLink)
         BiddingButtonText:SetText("End Bidding")
 	elseif state == States.BIDDING_ENDED then 
-        FKPDialog:UnregisterEvent(CHAT_EVENT_TYPE)
-
         BiddingButton:Disable()
         ItemName:SetText("vv Select Winner vv")
 
@@ -169,6 +182,7 @@ local function SetState(newState)
 
             removeButton:Hide()
             winnerButton:Show()
+
             winnerButton:SetScript("OnClick", function(self, button, down)
                 FKPHelper:SpendFKP(sortedBids[i].name, FKP_ITEM_COST)
                 SetState(States.IDLE)
@@ -213,25 +227,32 @@ BiddingButton:SetScript("OnClick", function(self, button, down)
 end)
 
 FKPDialog:SetScript("OnEvent", function(self, event, ...)
-    if event == CHAT_EVENT_TYPE then
-        local message, playerName = ...
+    for i = 1, #CHAT_EVENT_TYPES do
+        if event == CHAT_EVENT_TYPES[i] then
+            local message, playerName = ...
 
-        if not string.match(message, "%f[%a]bid%f[%A]") then
-            if DEBUG then
-                local testBidName = string.match(message, "testbid (%a+)")
-                if testBidName then
-                    AddBid(testBidName)
-                    InitBidderList()
-	            end
+            if not string.match(message, "%f[%a]bid%f[%A]") then
+                if DEBUG then
+                    local testBidName = string.match(message, "testbid (%a+)")
+                    if testBidName then
+                        AddBid(testBidName)
+                        InitBidderList()
+	                end
+                end
+                return
             end
+            AddBid(playerName)
+            InitBidderList()
             return
         end
-        AddBid(playerName)
-        InitBidderList()
     end
 end)
 
 FKPDialog:SetScript("OnShow", function(self)
+    SetState(States.IDLE)
+end)
+
+FKPDialog:SetScript("OnHide", function(self)
     SetState(States.IDLE)
 end)
 
