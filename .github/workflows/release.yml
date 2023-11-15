@@ -8,9 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: FKPManager
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -19,7 +16,7 @@ jobs:
         id: package
         uses: BigWigsMods/packager@v2.0.3
         with:
-          args: ''
+          args: '-t ./FKPManager'
 
       - name: Create Release
         id: create_release
