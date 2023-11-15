@@ -15,8 +15,6 @@ jobs:
       - name: Package Addon
         id: package
         uses: BigWigsMods/packager@v2.0.3
-        with:
-          args: '-t ./FKPManager'
 
       - name: Create Release
         id: create_release
