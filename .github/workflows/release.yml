@@ -22,11 +22,11 @@ jobs:
       - name: Check for Version Change
         id: version-change
         run: |
-          VERSION_CHANGE=$(git diff HEAD^ -- FKPManager.toc | grep '^+## Version:')
+          VERSION_CHANGE=$(git diff HEAD^ -- FKPManager.toc | grep '^+## Version:' || true)
           if [ -z "$VERSION_CHANGE" ]; then
-            echo "::set-output name=changed::false"
+          echo "::set-output name=changed::false"
           else
-            echo "::set-output name=changed::true"
+          echo "::set-output name=changed::true"
           fi
   
   build:
