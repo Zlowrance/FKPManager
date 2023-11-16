@@ -32,7 +32,8 @@ function AnimationHelper:FadeOut(frame, duration)
 end
 
 function AnimationHelper:SlideIn(frame, duration, direction, easing, onComplete)
-    local parentWidth, parentHeight = UIParent:GetWidth(), UIParent:GetHeight()
+    local parent = frame:GetParent() or UIParent
+    local parentWidth, parentHeight = parent:GetWidth(), parent:GetHeight()
     local endX, endY = frame:GetCenter()
     local startX, startY = endX, endY
 
@@ -48,7 +49,7 @@ function AnimationHelper:SlideIn(frame, duration, direction, easing, onComplete)
     frame:ClearAllPoints()
     
     local function SetFramePosition(x, y)
-        frame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y)
+        frame:SetPoint("CENTER", parent, "BOTTOMLEFT", x, y)
     end
     
     SetFramePosition(startX, startY)
@@ -65,7 +66,8 @@ function AnimationHelper:SlideIn(frame, duration, direction, easing, onComplete)
 end
 
 function AnimationHelper:SlideOut(frame, duration, direction, easing, onComplete)
-    local parentWidth, parentHeight = UIParent:GetWidth(), UIParent:GetHeight()
+    local parent = frame:GetParent() or UIParent
+    local parentWidth, parentHeight = parent:GetWidth(), parent:GetHeight()
     local startX, startY = frame:GetCenter()
     local endX, endY = startX, startY
 
@@ -81,7 +83,7 @@ function AnimationHelper:SlideOut(frame, duration, direction, easing, onComplete
     frame:ClearAllPoints()
     
     local function SetFramePosition(x, y)
-        frame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y)
+        frame:SetPoint("CENTER", parent, "BOTTOMLEFT", x, y)
     end
 
     if easing == nil then
