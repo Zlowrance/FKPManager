@@ -18,11 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          fetch-depth: 5
+          fetch-depth: 2
       - name: Check for Version Change
         id: version-change
         run: |
-          VERSION_CHANGE=$(git diff HEAD^ HEAD -- FKPManager.toc | grep '^+## Version:')
+          VERSION_CHANGE=$(git diff HEAD^ -- FKPManager.toc | grep '^+## Version:')
           if [ -z "$VERSION_CHANGE" ]; then
             echo "::set-output name=changed::false"
           else
