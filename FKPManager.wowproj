@@ -28,7 +28,7 @@
     <Content Include="assets\fkp logo.png" />
     <Content Include="assets\WhiteCircle.png" />
     <Content Include="assets\WhiteSquare.png" />
-    <Content Include="download_fkp.sh" />
+    <Content Include="download_fkp.ps1" />
     <Content Include="FKPData.lua">
       <SubType>Code</SubType>
     </Content>
