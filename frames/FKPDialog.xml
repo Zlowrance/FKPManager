@@ -56,11 +56,16 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="ItemName" inherits="GameFontNormal" text="Select Item">
+				<FontString name="ItemName" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="Select Item">
 					<Size x="200" y="20" />
 					<Anchors>
-						<Anchor y="-190" point="TOP" />
+						<Anchor y="-191" point="TOP" />
 					</Anchors>
+					<FontHeight val="18" />
+					<Color r="1" g="1" b="1" />
+					<Shadow x="2" y="-2">
+						<Color />
+					</Shadow>
 				</FontString>
 			</Layer>
 		</Layers>
@@ -75,7 +80,7 @@
 				</Backdrop>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="ScrollFrameBG" alpha="0.6" file="Interface\AddOns\FKPManager\assets\WhiteSquare.png">
+						<Texture name="ScrollFrameBG" alpha="0.6" file="Interface\AddOns\FKPManager\assets\FadedBG.png">
 							<Anchors>
 								<Anchor point="TOPLEFT" />
 								<Anchor point="BOTTOMRIGHT" />
@@ -84,11 +89,16 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString name="Instructions" inherits="GameFontWhiteShadowLarge" text="Drag an item from your bags to the slot above then click Start Bidding to begin.">
+						<FontString name="Instructions" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="Drag an item from your bags to the slot above then click Start Bidding to begin.">
 							<Size x="322" y="99" />
 							<Anchors>
 								<Anchor point="CENTER" />
 							</Anchors>
+							<FontHeight val="20" />
+							<Color r="1" g="1" b="1" />
+							<Shadow x="2" y="-2">
+								<Color />
+							</Shadow>
 						</FontString>
 					</Layer>
 				</Layers>
@@ -108,12 +118,16 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString name="BiddingButtonText" inherits="GameFontWhiteShadowLarge" font="Fonts\FRIZQT___CYR.TTF" text="START BIDDING">
+						<FontString name="BiddingButtonText" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="START BIDDING">
 							<Size x="163" y="30" />
 							<Anchors>
 								<Anchor point="CENTER" />
 							</Anchors>
-							<FontHeight val="16" />
+							<FontHeight val="20" />
+							<Color r="1" g="1" b="1" />
+							<Shadow x="2" y="-2">
+								<Color />
+							</Shadow>
 						</FontString>
 					</Layer>
 				</Layers>

@@ -26,6 +26,7 @@
     <Content Include="assets\CloseButton_Pushed.png" />
     <Content Include="assets\FadedBG.png" />
     <Content Include="assets\fkp logo.png" />
+    <Content Include="assets\FKPIcon.png" />
     <Content Include="assets\WhiteCircle.png" />
     <Content Include="assets\WhiteSquare.png" />
     <Content Include="download_fkp.ps1" />
@@ -38,6 +39,7 @@
     <Content Include="FKPManager.toc">
       <SubType>TableOfContents</SubType>
     </Content>
+    <Content Include="fonts\CuteBeSpecial.otf" />
     <Content Include="frames\FKPDialog.lua">
       <SubType>Code</SubType>
       <DependentUpon>frames\FKPDialog.xml</DependentUpon>
@@ -78,6 +80,7 @@
     <Folder Include="frames" />
     <Folder Include="lib" />
     <Folder Include="lib\LibEasing" />
+    <Folder Include="fonts" />
   </ItemGroup>
   <Import Project="$(DevEnvDir)\Extensions\Tools\MSBuild\AddonStudio\Wow\3.0\WowAddonStudio.targets" />
   <!--

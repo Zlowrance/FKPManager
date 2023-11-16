@@ -156,7 +156,7 @@ local function InitBidderList()
 
         local topEnd = GetTopEndRoll(index - 1)
         playerName:SetText(player.name)
-        playerFKP:SetText(player.fkp .. " FKP")
+        playerFKP:SetText(player.fkp)
         playerRoll:SetText("rolls 1-" .. topEnd)
 
         local unitID = GetRaidMemberUnitIDFromName(player.name)

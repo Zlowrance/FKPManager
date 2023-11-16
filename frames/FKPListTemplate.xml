@@ -48,28 +48,47 @@
 						<Anchor point="LEFT" />
 					</Anchors>
 				</Texture>
+				<Texture name="Portrait" file="Interface\AddOns\FKPManager\assets\FKPIcon.png">
+					<Size x="20" y="20" />
+					<Anchors>
+						<Anchor x="65" y="3" point="BOTTOMLEFT" />
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="Name" inherits="GameFontNormal" text="FontString2" justifyH="LEFT">
-					<Size x="195" y="20" />
+				<FontString name="Roll" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="rolls 1-100" justifyH="LEFT">
+					<Size x="150" y="20" />
 					<Anchors>
-						<Anchor x="60" point="TOPLEFT" />
-						<Anchor x="-10" point="TOPRIGHT" />
+						<Anchor x="120" y="3" point="BOTTOMLEFT" />
 					</Anchors>
+					<FontHeight val="20" />
+					<Color r="0.878" g="0.878" b="0.878" />
+					<Shadow x="1" y="-1">
+						<Color />
+					</Shadow>
 				</FontString>
-				<FontString name="FKP" inherits="GameFontWhiteShadowLarge" text="FontString3" justifyH="LEFT">
-					<Size x="176" y="20" />
+				<FontString name="FKP" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="999" justifyH="LEFT">
+					<Size x="40" y="20" />
 					<Anchors>
-						<Anchor x="65" point="LEFT" />
-						<Anchor x="-10" point="RIGHT" />
+						<Anchor x="86" y="3" point="BOTTOMLEFT" />
 					</Anchors>
+					<FontHeight val="20" />
+					<Color r="1" g="1" b="0.753" />
+					<Shadow x="1" y="-1">
+						<Color />
+					</Shadow>
 				</FontString>
-				<FontString name="Roll" inherits="QuestDifficulty_Trivial" text="FontString3">
-					<Size x="176" y="20" />
+				<FontString name="Name" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="Chompy" justifyH="LEFT">
+					<Size x="223" y="20" />
 					<Anchors>
-						<Anchor x="60" point="BOTTOMLEFT" />
-						<Anchor x="-10" point="BOTTOMRIGHT" />
+						<Anchor x="65" y="-10" point="TOPLEFT" />
+						<Anchor y="-10" point="TOPRIGHT" />
 					</Anchors>
+					<FontHeight val="30" />
+					<Color r="1" g="1" b="1" />
+					<Shadow x="2" y="-2">
+						<Color />
+					</Shadow>
 				</FontString>
 			</Layer>
 		</Layers>
