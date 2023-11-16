@@ -18,7 +18,10 @@ jobs:
       - name: Check for Version Change
         id: version-change
         run: |
-          VERSION_CHANGE=$(git diff HEAD^ HEAD -- FKPManager.toc | grep '^+## Version:')
+          git fetch --depth=2
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          git checkout $BRANCH_NAME
+          VERSION_CHANGE=$(git diff HEAD^ HEAD -- path/to/FKPManager.toc | grep '^+## Version:')
           if [ -z "$VERSION_CHANGE" ]; then
             echo "::set-output name=changed::false"
           else
