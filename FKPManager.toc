@@ -5,12 +5,19 @@
 ## Notes: uWu *purrs*
 ## SavedVariables: FKPManagerData
 
+# core
 Globals.lua
 Logging.lua
 FKPData.lua
 FKPHelper.lua
 FSM.lua
 App.lua
+
+# libs
+lib/LibStub.lua
+lib/LibEasing/LibEasing.toc
+
+# frames
 AnimationHelper.lua
 frames/FKPListTemplate.xml
 frames/FKPListTemplate.lua
