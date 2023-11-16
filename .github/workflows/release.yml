@@ -44,6 +44,12 @@ jobs:
           echo "Extracted version $VERSION"
           echo "::set-output name=version::$VERSION"
           
+      - name: Package Addon
+        id: package
+        uses: BigWigsMods/packager@v2.0.3
+        with:
+          args: -n "{package-name}"
+            
       - name: Create and Push Tag
         run: |
           VERSION=${{ steps.extract_version.outputs.version }}
@@ -51,12 +57,6 @@ jobs:
           git config --global user.name "Github Actions"
           git tag -a "v$VERSION" -m "Release v$VERSION"
           git push origin "v$VERSION"
-          
-      - name: Package Addon
-        id: package
-        uses: BigWigsMods/packager@v2.0.3
-        with:
-          args: -n "{package-name}"
           
       - name: Create Release
         id: create_release
