@@ -1,8 +1,8 @@
 ## Title: FKPManager
-## Version: 0.3.3
+## Version: 0.3.4
 ## Author: zachl
 ## Interface: 80205
-## Notes: uWu *purrs* test7
+## Notes: uWu *purrs*
 ## SavedVariables: FKPManagerData
 
 # core
