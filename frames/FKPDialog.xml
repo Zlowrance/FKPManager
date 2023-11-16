@@ -93,7 +93,7 @@
 					</Layer>
 				</Layers>
 			</ScrollFrame>
-			<Button name="CloseButton" inherits="UIPanelCloseButton">
+			<Button name="CloseButton">
 				<Size x="50" y="50" />
 				<Anchors>
 					<Anchor x="15" y="15" point="TOPRIGHT" />

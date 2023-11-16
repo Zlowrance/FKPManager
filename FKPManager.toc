@@ -15,7 +15,7 @@ App.lua
 
 # libs
 lib/LibStub.lua
-lib/LibEasing/LibEasing.toc
+lib/LibEasing/LibEasing.lua
 
 # frames
 AnimationHelper.lua

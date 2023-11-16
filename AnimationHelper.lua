@@ -1,6 +1,8 @@
 -- Author      : zachl
 -- Create Date : 11/14/2023 4:09:23 PM
 
+local LibEasing = LibStub("LibEasing-1.0");
+
 AnimationHelper = {}
 AnimationDirection = {
     UP = "UP",
@@ -9,87 +11,104 @@ AnimationDirection = {
     RIGHT = "RIGHT"
 }
 
+function AnimationHelper:Cancel(handle)
+    LibEasing:StopEasing(handle)
+end
+
+local function SetFrameALpha(frame, alpha)
+    frame:SetAlpha(alpha)
+end
+
 function AnimationHelper:FadeIn(frame, duration)
-    local animGroup = frame:CreateAnimationGroup()
-
-    local anim = animGroup:CreateAnimation("Alpha")
-    anim:SetFromAlpha(0)
-    anim:SetToAlpha(1)
-    anim:SetDuration(duration)
-    anim:SetSmoothing("OUT")
-
-    return animGroup
+    return LibEasing:Ease(function(progress)
+        frame:SetAlpha(progress)
+    end, 0, 1, duration, LibEasing.InOutQuad)
 end
 
 function AnimationHelper:FadeOut(frame, duration)
-    local animGroup = frame:CreateAnimationGroup()
-
-    local anim = animGroup:CreateAnimation("Alpha")
-    anim:SetFromAlpha(1)
-    anim:SetToAlpha(0)
-    anim:SetDuration(duration)
-    anim:SetSmoothing("IN")
-
-    return animGroup
+    return LibEasing:Ease(function(progress)
+        frame:SetAlpha(progress)
+    end, 1, 0, duration, LibEasing.InOutQuad)
 end
 
-function AnimationHelper:SlideIn(frame, duration, direction)
-    local animGroup = frame:CreateAnimationGroup()
-    local anim = animGroup:CreateAnimation("Translation")
-    anim:SetDuration(duration)
-    anim:SetSmoothing("OUT")
-
-    -- Save the original position
-    local origPoint, origRelativeTo, origRelPoint, origX, origY = frame:GetPoint()
-
-    -- Determine the offset based on the direction
-    local offsetX, offsetY = 0, 0
-    local parent = frame:GetParent() or UIParent
-    local parentWidth, parentHeight = parent:GetWidth(), parent:GetHeight()
+function AnimationHelper:SlideIn(frame, duration, direction, easing, onComplete)
+    local parentWidth, parentHeight = UIParent:GetWidth(), UIParent:GetHeight()
+    local endX, endY = frame:GetCenter()
+    local startX, startY = endX, endY
 
     if direction == AnimationDirection.UP then
-        offsetY = -parentHeight
+        startY = startY - parentHeight
     elseif direction == AnimationDirection.DOWN then
-        offsetY = parentHeight
+        startY = startY + parentHeight
     elseif direction == AnimationDirection.LEFT then
-        offsetX = parentWidth
+        startX = startX + parentWidth
     elseif direction == AnimationDirection.RIGHT then
-        offsetX = -parentWidth
+        startX = startX - parentWidth
+    end
+    frame:ClearAllPoints()
+    
+    local function SetFramePosition(x, y)
+        frame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y)
     end
     
-    anim:SetOffset(-offsetX, -offsetY)
+    SetFramePosition(startX, startY)
 
-    -- Set the starting position
-    frame:SetPoint(origPoint, origRelativeTo, origRelPoint, origX + offsetX, origY + offsetY)
+    if easing == nil then
+        easing = LibEasing.OutQuad
+    end
     
-    -- Reset position after animation
-    animGroup:SetScript("OnFinished", function()
-        frame:SetPoint(origPoint, origRelativeTo, origRelPoint, origX, origY)
+    return LibEasing:Ease(function(progress)
+        local newX = easing(progress, startX, endX - startX, 1)
+        local newY = easing(progress, startY, endY - startY, 1)
+        SetFramePosition(newX, newY)
+    end, 0, 1, duration, LibEasing.Linear, onComplete)
+end
+
+function AnimationHelper:SlideOut(frame, duration, direction, easing, onComplete)
+    local parentWidth, parentHeight = UIParent:GetWidth(), UIParent:GetHeight()
+    local startX, startY = frame:GetCenter()
+    local endX, endY = startX, startY
+
+    if direction == AnimationDirection.UP then
+        endY = endY + parentHeight
+    elseif direction == AnimationDirection.DOWN then
+        endY = endY - parentHeight
+    elseif direction == AnimationDirection.LEFT then
+        endX = endX - parentWidth
+    elseif direction == AnimationDirection.RIGHT then
+        endX = endX + parentWidth
+    end
+    frame:ClearAllPoints()
+    
+    local function SetFramePosition(x, y)
+        frame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y)
+    end
+
+    if easing == nil then
+        easing = LibEasing.InQuad
+    end
+    
+    return LibEasing:Ease(function(progress)
+        local newX = easing(progress, startX, endX - startX, 1)
+        local newY = easing(progress, startY, endY - startY, 1)
+        SetFramePosition(newX, newY)
+    end, 0, 1, duration, LibEasing.Linear, onComplete)
+end
+
+function AnimationHelper:PunchScale(frame, punchAmount, duration, onComplete)
+    local startScale = 1.0  -- Starting scale
+    local maxScale = punchAmount    -- Maximum scale
+    local midDuration = duration / 2  -- Duration to reach max scale
+
+    -- First part: scale up to maxScale
+    LibEasing:Ease(function(progress)
+        local currentScale = LibEasing.OutQuad(progress, startScale, maxScale - startScale, 1)
+        frame:SetScale(currentScale)
+    end, 0, 1, midDuration, LibEasing.Linear, function()
+        -- Second part: scale back down to startScale
+        LibEasing:Ease(function(progress)
+            local currentScale = LibEasing.InQuad(progress, maxScale, startScale - maxScale, 1)
+            frame:SetScale(currentScale)
+        end, 0, 1, midDuration, LibEasing.Linear, onComplete)
     end)
-
-    return animGroup
-end
-
-function AnimationHelper:SlideOut(frame, duration, direction)
-    local animGroup = frame:CreateAnimationGroup()
-    local anim = animGroup:CreateAnimation("Translation")
-
-    anim:SetDuration(duration)
-    anim:SetSmoothing("IN")
-
-    local width, height = frame:GetWidth(), frame:GetHeight()
-    local parent = frame:GetParent() or UIParent
-    local parentWidth, parentHeight = parent:GetWidth(), parent:GetHeight()
-
-    if direction == AnimationDirection.UP then
-        anim:SetOffset(0, -parentHeight)
-    elseif direction == AnimationDirection.DOWN then
-        anim:SetOffset(0, parentHeight)
-    elseif direction == AnimationDirection.LEFT then
-        anim:SetOffset(parentWidth, 0)
-    elseif direction == AnimationDirection.RIGHT then
-        anim:SetOffset(-parentWidth, 0)
-    end
-
-    return animGroup
 end

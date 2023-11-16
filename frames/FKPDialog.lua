@@ -1,4 +1,6 @@
 -- LOCAL VARS
+local BASE_ANIM_TIME = .3
+local QUICK_ANIM_TIME = .15
 local States = {
     IDLE = "IDLE",
     ITEM_SELECTED = "ITEM_SELECTED",
@@ -22,7 +24,6 @@ local FKPFrameSpacing = 5
 local initialized = false
 
 -- INITIALIZATION
-FKPDialog:SetMovable(true)
 FKPDialog:EnableMouse(true)
 FKPDialog:RegisterForDrag("LeftButton")
 
@@ -130,8 +131,7 @@ local function LayoutBidderList()
     for i, player in ipairs(players) do
         local button = player.frame
         local playerName = GetChildOfFrame(button, "Name")
-        local playerIndex = GetPlayerIndex(playerName:GetText())
-        local yOffset = -button:GetHeight() * (playerIndex - 1) - FKPFrameSpacing * (playerIndex)
+        local yOffset = -button:GetHeight() * (i - 1) - FKPFrameSpacing * i
         button:SetPoint("TOP", contentParent, "TOP", 0, yOffset)
 	end
 end
@@ -341,12 +341,30 @@ end
 
 -- FRAME EVENT HANDLERS
 
+local function ApplyButtonPressAnimation(frame)
+    AnimationHelper:PunchScale(frame, 1.1, QUICK_ANIM_TIME)
+end
+
+CloseButton:SetScript("OnClick", function(self, button, down)
+    FKPDialog:SetClampedToScreen(false)
+    FKPDialog:SetMovable(false)
+    local startX, startY = FKPDialog:GetCenter()
+    local handle = AnimationHelper:SlideOut(FKPDialog, BASE_ANIM_TIME, AnimationDirection.DOWN, nil, function()
+        FKPDialog:Hide()
+        FKPDialog:ClearAllPoints()
+        FKPDialog:SetPoint("CENTER", UIParent, "BOTTOMLEFT", startX, startY)
+    end)
+    ApplyButtonPressAnimation(CloseButton)
+end)
+
 ClearItemButton:SetScript("OnClick", function(self, button, down)
     fsm:setState(States.IDLE)
+    ApplyButtonPressAnimation(ClearItemButton)
 end)
 
 BiddingButton:SetScript("OnClick", function(self, button, down)
-   fsm:handleEvent(Events.BID_BUTTON_PRESS)
+    fsm:handleEvent(Events.BID_BUTTON_PRESS)
+    ApplyButtonPressAnimation(BiddingButton)
 end)
 
 FKPDialog:SetScript("OnEvent", function(self, event, message, playerName)
@@ -372,6 +390,12 @@ FKPDialog:SetScript("OnEvent", function(self, event, message, playerName)
 end)
 
 FKPDialog:SetScript("OnShow", function(self)
+    FKPDialog:SetClampedToScreen(false)
+    FKPDialog:SetMovable(false)
+    local handle = AnimationHelper:SlideIn(FKPDialog, BASE_ANIM_TIME, AnimationDirection.UP, nil, function()
+        FKPDialog:SetClampedToScreen(true)
+        FKPDialog:SetMovable(true)
+    end)
     if initialized then
         return
     end
@@ -380,10 +404,16 @@ FKPDialog:SetScript("OnShow", function(self)
 end)
 
 FKPDialog:SetScript("OnMouseDown", function(self)
+    if not FKPDialog:IsMovable() then
+        return
+    end
     self:StartMoving()
 end)
 
 FKPDialog:SetScript("OnMouseUp", function(self)
+    if not FKPDialog:IsMovable() then
+        return
+    end
     self:StopMovingOrSizing()
 end)
 

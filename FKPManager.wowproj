@@ -58,6 +58,17 @@
     <Content Include="Globals.lua">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="lib\LibEasing\LibEasing.lua">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="lib\LibEasing\LibEasing.toc">
+      <SubType>TableOfContents</SubType>
+    </Content>
+    <Content Include="lib\LibEasing\LICENSE.md" />
+    <Content Include="lib\LibEasing\README.md" />
+    <Content Include="lib\LibStub.lua">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Logging.lua">
       <SubType>Code</SubType>
     </Content>
@@ -65,6 +76,8 @@
   <ItemGroup>
     <Folder Include="assets" />
     <Folder Include="frames" />
+    <Folder Include="lib" />
+    <Folder Include="lib\LibEasing" />
   </ItemGroup>
   <Import Project="$(DevEnvDir)\Extensions\Tools\MSBuild\AddonStudio\Wow\3.0\WowAddonStudio.targets" />
   <!--
