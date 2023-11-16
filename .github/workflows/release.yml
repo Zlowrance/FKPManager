@@ -17,6 +17,8 @@ jobs:
       versionChanged: ${{ steps.version-change.outputs.changed }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
       - name: Check for Version Change
         id: version-change
         run: |
