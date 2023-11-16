@@ -40,7 +40,7 @@ jobs:
       - name: Extract Version from .toc
         id: extract_version
         run: |
-          VERSION=$(grep '^## Version:' path/to/FKPManager.toc | cut -d ':' -f2 | xargs)
+          VERSION=$(grep '^## Version:' FKPManager.toc | cut -d ':' -f2 | xargs)
           echo "Extracted version $VERSION"
           echo "::set-output name=version::$VERSION"
           
