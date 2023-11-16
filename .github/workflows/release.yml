@@ -5,6 +5,8 @@ permissions:
 
 on:
   push:
+    branches:
+      - 'main'
     paths:
       - 'FKPManager.toc'
 
@@ -18,18 +20,12 @@ jobs:
       - name: Check for Version Change
         id: version-change
         run: |
-          git fetch --depth=2
-          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-          if [ "$BRANCH_NAME" == "HEAD" ]; then
-            BRANCH_NAME="main" # or your default branch name
-          fi
-          VERSION_CHANGE=$(git diff origin/$BRANCH_NAME^ origin/$BRANCH_NAME -- FKPManager.toc | grep '^+## Version:')
+          VERSION_CHANGE=$(git diff HEAD^ HEAD -- FKPManager.toc | grep '^+## Version:')
           if [ -z "$VERSION_CHANGE" ]; then
             echo "::set-output name=changed::false"
           else
             echo "::set-output name=changed::true"
           fi
-  
   
   build:
     runs-on: ubuntu-latest
