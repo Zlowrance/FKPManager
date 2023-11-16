@@ -2,7 +2,7 @@
 ## Version: 0.3.2
 ## Author: zachl
 ## Interface: 80205
-## Notes: uWu *purrs*
+## Notes: uWu *purrs* test
 ## SavedVariables: FKPManagerData
 
 # core
