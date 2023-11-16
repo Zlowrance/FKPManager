@@ -23,7 +23,7 @@ jobs:
           if [ "$BRANCH_NAME" == "HEAD" ]; then
             BRANCH_NAME="main" # or your default branch name
           fi
-          VERSION_CHANGE=$(git diff origin/$BRANCH_NAME^ origin/$BRANCH_NAME -- path/to/FKPManager.toc | grep '^+## Version:')
+          VERSION_CHANGE=$(git diff origin/$BRANCH_NAME^ origin/$BRANCH_NAME -- FKPManager.toc | grep '^+## Version:')
           if [ -z "$VERSION_CHANGE" ]; then
             echo "::set-output name=changed::false"
           else
