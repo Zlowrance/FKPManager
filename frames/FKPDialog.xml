@@ -143,6 +143,45 @@
 				<NormalTexture file="Interface\AddOns\FKPManager\assets\CloseButton.png" />
 				<PushedTexture file="Interface\AddOns\FKPManager\assets\CloseButton_Pushed.png" />
 			</Button>
+			<Frame name="History" frameStrata="BACKGROUND">
+				<Size x="80" y="200" />
+				<Anchors>
+					<Anchor x="-70" point="TOPLEFT" />
+					<Anchor x="-70" point="BOTTOMLEFT" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBG">
+							<Size x="64" y="64" />
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
+							<Color r="1" g="1" b="1" />
+						</Texture>
+					</Layer>
+					<Layer>
+						<Texture name="$parentShadow" alpha="0.5" file="Interface\AddOns\FKPManager\assets\FadedBG.png">
+							<Size x="80" y="600" />
+							<Anchors>
+								<Anchor point="TOPLEFT" />
+								<Anchor point="BOTTOMRIGHT" />
+							</Anchors>
+							<TexCoords left="0" right="0.5" top="0" bottom="1" />
+							<Color r="1" g="1" b="1" />
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<ScrollFrame name="$parentScrollView" inherits="ListScrollFrameTemplate" enableMouseClicks="true">
+						<Size x="200" y="200" />
+						<Anchors>
+							<Anchor x="10" y="-10" point="TOPLEFT" />
+							<Anchor x="-10" y="10" point="BOTTOMRIGHT" />
+						</Anchors>
+					</ScrollFrame>
+				</Frames>
+			</Frame>
 		</Frames>
 	</Frame>
 </Ui>

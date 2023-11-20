@@ -44,6 +44,31 @@ FKPDialog:RegisterForDrag("LeftButton")
 
 -- LOCAL FUNCTIONS
 
+local function InitHistory()
+    local historyContent = GetChildOfFrame(HistoryScrollView, "HistoryContentParent") or CreateFrame("Frame", "HistoryContentParent")
+    HistoryScrollView:SetScrollChild(historyContent)
+    local historyWidth = HistoryScrollView:GetWidth()
+    historyContent:SetWidth(HistoryScrollView:GetWidth())
+    historyContent:SetHeight(1)
+    
+    local history = FKPHelper:GetPastBids()
+    local historyItemSize = historyWidth - 5
+    local historyItemSpacing = 5
+    local yOffset = -historyItemSpacing
+    -- show textures for each history item
+    for i = 1, #history do
+        local _, itemLink, _, _, _, _, _, _, _, itemIcon = GetItemInfo(history[i])
+        if not itemLink or not itemIcon then
+            return
+        end
+        local historyItem = historyContent:CreateTexture("HistoryItem" .. i, "BACKGROUND")
+        historyItem:SetTexture(itemIcon)
+        historyItem:SetSize(historyItemSize, historyItemSize)
+        historyItem:SetPoint("TOPLEFT", historyContent, "TOPLEFT", 0, yOffset)
+        yOffset = yOffset - historyItemSize - historyItemSpacing
+    end
+end
+
 local function GetPlayerIndex(playerName)
     for i = 1, #players do
         if players[i].name == playerName then
@@ -327,6 +352,8 @@ local function BIDDING_ENDED_Enter(fsm)
                 ReleaseFKPListFrame(player.frame)
 			end
             SendToRaid(player.name .. " wins " .. currentItem.link .. "!!")
+            FKPHelper:AddPastBid(currentItem.id)
+            InitHistory()
             fsm:setState(States.IDLE)
         end)
 	end
@@ -396,6 +423,7 @@ FKPDialog:SetScript("OnShow", function(self)
         FKPDialog:SetClampedToScreen(true)
         FKPDialog:SetMovable(true)
     end)
+    InitHistory()
     if initialized then
         return
     end

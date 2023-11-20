@@ -17,3 +17,18 @@ end
 function FKPHelper:ClearSpentFKP()
     FKPManagerData.FKPSpent = {}
 end
+
+function FKPHelper:AddPastBid(itemID)
+    if FKPManagerData.PastBids == nil then
+        FKPManagerData.PastBids = {}
+    end
+    table.insert(FKPManagerData.PastBids, itemID)
+end 
+
+function FKPHelper:ClearPastBids()
+    FKPManagerData.PastBids = {}
+end
+
+function FKPHelper:GetPastBids()
+    return FKPManagerData.PastBids or {}
+end

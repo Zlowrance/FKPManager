@@ -22,7 +22,7 @@ eventFrame:RegisterEvent("ADDON_LOADED")
 eventFrame:SetScript("OnEvent", function(self, event, arg1)
     if event == "ADDON_LOADED" and arg1 == ADDON_NAME then
         if FKPManagerData == nil then
-		    FKPManagerData = {DataTimestamp = 0, FKPSpent = {}}
+		    FKPManagerData = {DataTimestamp = 0, FKPSpent = {}, PastBids = {}}
 		end
         
         if FKPManagerData.DataTimestamp < FKPDataLastUpdated then
