@@ -1,5 +1,5 @@
 ## Title: FKPManager
-## Version: 0.4.0
+## Version: 0.4.1
 ## Author: zachl
 ## Interface: 80205
 ## Notes: uWu *purrs*

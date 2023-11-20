@@ -58,3 +58,10 @@ $luaContent | Out-File -FilePath $LUA_FILE -Encoding UTF8
 Remove-Item $CSV_FILE
 
 Write-Host "FKP data table created: $LUA_FILE"
+
+# If running in the console, wait for input before closing.
+if ($Host.Name -eq "ConsoleHost")
+{
+    Write-Host "Press any key to continue..."
+    $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyUp") > $null
+}
