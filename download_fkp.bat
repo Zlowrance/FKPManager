@@ -1,2 +1,2 @@
 @echo off
-PowerShell -NoProfile -ExecutionPolicy Bypass -File ".\fkp_helper.ps1"
+PowerShell -NoProfile -ExecutionPolicy Bypass -File ".\scripts\fkp_helper.ps1"
