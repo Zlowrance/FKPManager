@@ -48,7 +48,7 @@ jobs:
         id: package
         uses: BigWigsMods/packager@v2.0.3
         with:
-          args: -m .pkgmeta
+          args: -m "./.pkgmeta"
             
       - name: Create and Push Tag
         run: |
