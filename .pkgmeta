@@ -1,0 +1,4 @@
+﻿package-as: FKPManager
+ignore:
+ - "FKPManager.wowproj"
+ - "FKPManager.wowsln"

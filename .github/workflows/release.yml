@@ -47,8 +47,6 @@ jobs:
       - name: Package Addon
         id: package
         uses: BigWigsMods/packager@v2.0.3
-        with:
-          args: -n "{package-name}"
             
       - name: Create and Push Tag
         run: |
