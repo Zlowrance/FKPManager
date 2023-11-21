@@ -16,6 +16,7 @@
     <Content Include="App.lua">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="assets\ArrowButton.png" />
     <Content Include="assets\Bg.png" />
     <Content Include="assets\ButtonBG.png" />
     <Content Include="assets\ButtonBG_Disabled.png" />
