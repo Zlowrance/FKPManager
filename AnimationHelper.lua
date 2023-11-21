@@ -19,6 +19,10 @@ local function SetFrameALpha(frame, alpha)
     frame:SetAlpha(alpha)
 end
 
+local function SetFramePosition(frame, x, y)
+    frame:SetPoint("CENTER", parent, "BOTTOMLEFT", x, y)
+end
+
 function AnimationHelper:FadeIn(frame, duration)
     return LibEasing:Ease(function(progress)
         frame:SetAlpha(progress)
@@ -29,6 +33,27 @@ function AnimationHelper:FadeOut(frame, duration)
     return LibEasing:Ease(function(progress)
         frame:SetAlpha(progress)
     end, 1, 0, duration, LibEasing.InOutQuad)
+end
+
+function AnimationHelper:MoveBy(frame, duration, x, y, easing, onComplete)
+    local startX, startY = frame:GetCenter()
+    return AnimationHelper:MoveTo(frame, duration, startX + x, startY + y, easing, onComplete)
+end
+
+function AnimationHelper:MoveTo(frame, duration, x, y, easing, onComplete)
+    local startX, startY = frame:GetCenter()
+    local endX, endY = x, y
+    frame:ClearAllPoints()
+
+    if easing == nil then
+        easing = LibEasing.InOutQuad
+    end
+
+    return LibEasing:Ease(function(progress)
+        local newX = startX + (endX - startX) * progress
+        local newY = startY + (endY - startY) * progress
+        SetFramePosition(frame, newX, newY)
+    end, 0, 1, duration, easing, onComplete)
 end
 
 function AnimationHelper:SlideIn(frame, duration, direction, easing, onComplete)
@@ -48,29 +73,16 @@ function AnimationHelper:SlideIn(frame, duration, direction, easing, onComplete)
     end
     frame:ClearAllPoints()
     
-    local function SetFramePosition(x, y)
-        frame:SetPoint("CENTER", parent, "BOTTOMLEFT", x, y)
-    end
+    SetFramePosition(frame, startX, startY)
     
-    SetFramePosition(startX, startY)
-
-    if easing == nil then
-        easing = LibEasing.OutQuad
-    end
-    
-    return LibEasing:Ease(function(progress)
-        local newX = easing(progress, startX, endX - startX, 1)
-        local newY = easing(progress, startY, endY - startY, 1)
-        SetFramePosition(newX, newY)
-    end, 0, 1, duration, LibEasing.Linear, onComplete)
+    return AnimationHelper:MoveTo(frame, duration, endX, endY, easing, onComplete)
 end
 
 function AnimationHelper:SlideOut(frame, duration, direction, easing, onComplete)
     local parent = frame:GetParent() or UIParent
     local parentWidth, parentHeight = parent:GetWidth(), parent:GetHeight()
-    local startX, startY = frame:GetCenter()
-    local endX, endY = startX, startY
-
+    local endX, endY = frame:GetCenter()
+    
     if direction == AnimationDirection.UP then
         endY = endY + parentHeight
     elseif direction == AnimationDirection.DOWN then
@@ -80,21 +92,8 @@ function AnimationHelper:SlideOut(frame, duration, direction, easing, onComplete
     elseif direction == AnimationDirection.RIGHT then
         endX = endX + parentWidth
     end
-    frame:ClearAllPoints()
     
-    local function SetFramePosition(x, y)
-        frame:SetPoint("CENTER", parent, "BOTTOMLEFT", x, y)
-    end
-
-    if easing == nil then
-        easing = LibEasing.InQuad
-    end
-    
-    return LibEasing:Ease(function(progress)
-        local newX = easing(progress, startX, endX - startX, 1)
-        local newY = easing(progress, startY, endY - startY, 1)
-        SetFramePosition(newX, newY)
-    end, 0, 1, duration, LibEasing.Linear, onComplete)
+    return AnimationHelper:MoveTo(frame, duration, endX, endY, easing, onComplete)
 end
 
 function AnimationHelper:PunchScale(frame, punchAmount, duration, onComplete)

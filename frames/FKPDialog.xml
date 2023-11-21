@@ -227,7 +227,7 @@
 						<NormalTexture file="Interface\AddOns\FKPManager\assets\CloseButton.png" />
 						<PushedTexture file="Interface\AddOns\FKPManager\assets\CloseButton_Pushed.png" />
 					</Button>
-					<Button name="HistoryOpenButton">
+					<Button name="HistoryOpenButton" hidden="true" frameStrata="HIGH">
 						<Size x="30" y="30" />
 						<Anchors>
 							<Anchor x="-15" point="LEFT" />

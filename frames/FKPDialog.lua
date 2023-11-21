@@ -22,6 +22,7 @@ local unusedFrames = {}
 local FKPFrameHeight = 60
 local FKPFrameSpacing = 5
 local initialized = false
+local historyShown = true
 
 -- INITIALIZATION
 FKPDialog:EnableMouse(true)
@@ -366,6 +367,26 @@ local function BIDDING_ENDED_SYSTEM_MSG_RECEIVED(fsm, message)
     end
 end
 
+local function ShowHistoryPanel()
+    if historyShown then
+        return
+    end
+    AnimationHelper:MoveBy(History, BASE_ANIM_TIME, -60, 0)
+    HistoryOpenButton:Hide()
+    HistoryCloseButton:Show()
+    historyShown = true
+end
+
+local function HideHistoryPanel()
+    if not historyShown then
+        return
+    end
+    AnimationHelper:MoveBy(History, BASE_ANIM_TIME, 60, 0)
+    HistoryOpenButton:Show()
+    HistoryCloseButton:Hide()
+    historyShown = false
+end
+
 -- FRAME EVENT HANDLERS
 
 local function ApplyButtonPressAnimation(frame)
@@ -460,6 +481,16 @@ end)
 
 dropTargetFrame:SetScript("OnLeave", function(self)
     GameTooltip:Hide()
+end)
+
+HistoryOpenButton:SetScript("OnClick", function(self, button, down)
+    ShowHistoryPanel()
+    ApplyButtonPressAnimation(HistoryOpenButton)
+end)
+
+HistoryCloseButton:SetScript("OnClick", function(self, button, down)
+    HideHistoryPanel()
+    ApplyButtonPressAnimation(HistoryCloseButton)
 end)
 
 -- FSM SETUP
