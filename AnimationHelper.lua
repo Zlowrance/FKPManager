@@ -20,7 +20,18 @@ local function SetFrameALpha(frame, alpha)
 end
 
 local function SetFramePosition(frame, x, y)
+    local parent = frame:GetParent() or UIParent
+    -- convert point to local space
+    x = x - parent:GetLeft()
+    y = y - parent:GetBottom()
     frame:SetPoint("CENTER", parent, "BOTTOMLEFT", x, y)
+end
+
+local function ClearFramePoints(frame)
+    local width = frame:GetRight() - frame:GetLeft()
+    local height = frame:GetTop() - frame:GetBottom()
+    frame:ClearAllPoints()
+    frame:SetSize(width, height)
 end
 
 function AnimationHelper:FadeIn(frame, duration)
@@ -43,8 +54,8 @@ end
 function AnimationHelper:MoveTo(frame, duration, x, y, easing, onComplete)
     local startX, startY = frame:GetCenter()
     local endX, endY = x, y
-    frame:ClearAllPoints()
-
+    ClearFramePoints(frame)
+    SetFramePosition(frame, startX, startY)
     if easing == nil then
         easing = LibEasing.InOutQuad
     end
@@ -71,8 +82,7 @@ function AnimationHelper:SlideIn(frame, duration, direction, easing, onComplete)
     elseif direction == AnimationDirection.RIGHT then
         startX = startX - parentWidth
     end
-    frame:ClearAllPoints()
-    
+    ClearFramePoints(frame)
     SetFramePosition(frame, startX, startY)
     
     return AnimationHelper:MoveTo(frame, duration, endX, endY, easing, onComplete)
