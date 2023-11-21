@@ -52,12 +52,14 @@ local function InitHistory()
     historyContent:SetWidth(HistoryScrollView:GetWidth())
     historyContent:SetHeight(1)
     
+    ClearFrame(historyContent)
+    
     local history = FKPHelper:GetPastBids()
     local historyItemSize = historyWidth - 5
     local historyItemSpacing = 5
     local yOffset = -historyItemSpacing
     -- show textures for each history item
-    for i = 1, #history do
+    for i = #history, 1, -1 do
         local _, itemLink, _, _, _, _, _, _, _, itemIcon = GetItemInfo(history[i])
         if not itemLink or not itemIcon then
             return
