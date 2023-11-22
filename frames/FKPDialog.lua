@@ -60,15 +60,30 @@ local function InitHistory()
     local yOffset = -historyItemSpacing
     -- show textures for each history item
     for i = #history, 1, -1 do
-        local _, itemLink, _, _, _, _, _, _, _, itemIcon = GetItemInfo(history[i])
+        print("history item " .. i .. " " .. DumpTable(history[i]))
+        local itemName, itemLink, _, _, _, _, _, _, _, itemIcon = GetItemInfo(history[i].itemID)
         if not itemLink or not itemIcon then
             return
         end
-        local historyItem = historyContent:CreateTexture("HistoryItem" .. i, "BACKGROUND")
-        historyItem:SetTexture(itemIcon)
+        local historyItem = CreateFrame("Frame", "HistoryItem" .. i, historyContent)
         historyItem:SetSize(historyItemSize, historyItemSize)
         historyItem:SetPoint("TOPLEFT", historyContent, "TOPLEFT", 0, yOffset)
+        local historyIcon = historyContent:CreateTexture("HistoryItem" .. i, "BACKGROUND")
+        historyIcon:SetTexture(itemIcon)
+        historyIcon:SetAllPoints(historyItem)
         yOffset = yOffset - historyItemSize - historyItemSpacing
+        historyItem:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetText(itemName)
+            for _, roll in ipairs(history[i].rolls) do
+                GameTooltip:AddLine(roll.playerName .. " rolled " .. roll.roll, 1, 0, 0)
+            end
+            GameTooltip:Show()
+        end)
+        
+        historyItem:SetScript("OnLeave", function(self)
+            GameTooltip:Hide()
+        end)
     end
 end
 
@@ -355,7 +370,13 @@ local function BIDDING_ENDED_Enter(fsm)
                 ReleaseFKPListFrame(player.frame)
 			end
             SendToRaid(player.name .. " wins " .. currentItem.link .. "!!")
-            FKPHelper:AddPastBid(currentItem.id)
+            local rolls = {}
+            for i = 1, #players do
+                if players[i].roll > 0 then
+                    table.insert(rolls, {playerName = players[i].name, roll = players[i].roll})
+                end
+            end
+            FKPHelper:AddPastBid(currentItem.id, rolls)
             InitHistory()
             fsm:setState(States.IDLE)
         end)
