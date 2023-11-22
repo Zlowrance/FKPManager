@@ -75,7 +75,13 @@ local function InitHistory()
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
             GameTooltip:SetText(itemName)
             for _, roll in ipairs(history[i].rolls) do
-                GameTooltip:AddLine(roll.playerName .. " rolled " .. roll.roll, 1, 0, 0)
+                local icon
+                if roll.won then
+                    icon = "Interface\\GROUPFRAME\\UI-Group-LeaderIcon"
+                end
+                local iconString = icon and "|T" .. icon .. ":0|t" or nil
+                GameTooltip:AddLine(iconString .. roll.playerName, 1, 1, 1)
+                GameTooltip:AddLine("    rolled " .. roll.roll, .5, .5, .5)
             end
             GameTooltip:Show()
         end)
@@ -372,7 +378,7 @@ local function BIDDING_ENDED_Enter(fsm)
             local rolls = {}
             for i = 1, #players do
                 if players[i].roll > 0 then
-                    table.insert(rolls, {playerName = players[i].name, roll = players[i].roll})
+                    table.insert(rolls, {playerName = players[i].name, roll = players[i].roll, won = players[i].name == player.name})
                 end
             end
             FKPHelper:AddPastBid(currentItem.id, rolls)
