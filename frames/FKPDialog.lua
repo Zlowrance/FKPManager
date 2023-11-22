@@ -60,7 +60,6 @@ local function InitHistory()
     local yOffset = -historyItemSpacing
     -- show textures for each history item
     for i = #history, 1, -1 do
-        print("history item " .. i .. " " .. DumpTable(history[i]))
         local itemName, itemLink, _, _, _, _, _, _, _, itemIcon = GetItemInfo(history[i].itemID)
         if not itemLink or not itemIcon then
             return
