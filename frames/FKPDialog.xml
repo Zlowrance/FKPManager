@@ -213,16 +213,16 @@
 						</Layers>
 					</Frame>
 					<ScrollFrame name="$parentScrollView" inherits="ListScrollFrameTemplate" enableMouseClicks="true">
-						<Size x="200" y="200" />
+						<Size x="49" y="520" />
 						<Anchors>
-							<Anchor x="10" y="-10" point="TOPLEFT" />
+							<Anchor x="21" y="-10" point="TOPLEFT" />
 							<Anchor x="-10" y="10" point="BOTTOMRIGHT" />
 						</Anchors>
 					</ScrollFrame>
-					<Button name="HistoryCloseButton">
+					<Button name="HistoryCloseButton" frameStrata="HIGH">
 						<Size x="30" y="30" />
 						<Anchors>
-							<Anchor x="-15" point="LEFT" />
+							<Anchor x="-15" point="TOPLEFT" />
 						</Anchors>
 						<NormalTexture file="Interface\AddOns\FKPManager\assets\CloseButton.png" />
 						<PushedTexture file="Interface\AddOns\FKPManager\assets\CloseButton_Pushed.png" />
@@ -230,10 +230,10 @@
 					<Button name="HistoryOpenButton" hidden="true" frameStrata="HIGH">
 						<Size x="30" y="30" />
 						<Anchors>
-							<Anchor x="-15" point="LEFT" />
+							<Anchor x="-15" point="TOPLEFT" />
 						</Anchors>
-						<NormalTexture file="Interface\AddOns\FKPManager\assets\ArrowButton.png" />
-						<PushedTexture file="Interface\AddOns\FKPManager\assets\ArrowButton.png" />
+						<NormalTexture file="Interface\AddOns\FKPManager\assets\HistoryButton.png" />
+						<PushedTexture file="Interface\AddOns\FKPManager\assets\HistoryButton_Pushed.png" />
 					</Button>
 				</Frames>
 			</Frame>

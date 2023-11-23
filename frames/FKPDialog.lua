@@ -399,17 +399,18 @@ local function ShowHistoryPanel()
     if historyShown then
         return
     end
-    AnimationHelper:MoveBy(History, BASE_ANIM_TIME, -60, 0)
+    AnimationHelper:MoveBy(History, BASE_ANIM_TIME, -70, 0)
     HistoryOpenButton:Hide()
     HistoryCloseButton:Show()
     historyShown = true
 end
 
-local function HideHistoryPanel()
+local function HideHistoryPanel(instant)
     if not historyShown then
         return
     end
-    AnimationHelper:MoveBy(History, BASE_ANIM_TIME, 60, 0)
+    local duration = instant and 0 or BASE_ANIM_TIME
+    AnimationHelper:MoveBy(History, duration, 70, 0)
     HistoryOpenButton:Show()
     HistoryCloseButton:Hide()
     historyShown = false
@@ -473,6 +474,7 @@ FKPDialog:SetScript("OnShow", function(self)
         FKPDialog:SetMovable(true)
     end)
     InitHistory()
+    HideHistoryPanel(true)
     if initialized then
         return
     end
