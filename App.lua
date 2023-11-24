@@ -26,7 +26,7 @@ eventFrame:RegisterEvent("CHAT_MSG_ADDON")
 
 local function SendChunksToGuild(chunks)
     for _, chunk in ipairs(chunks) do
-        C_ChatInfo.SendAddonMessage(MSG_PREFIX, chunk, "PARTY", nil)
+        C_ChatInfo.SendAddonMessage(MSG_PREFIX, chunk, ADDON_MSG_CHANNEL, nil)
     end
 end
 
@@ -89,12 +89,9 @@ local function OnAddonMessage(prefix, message, channel, sender)
             FKPManagerData.FKPSpent = {}
             FKPManagerData.DataTimestamp = deserialized.DataTimestamp
             for playerName, fkp in pairs(deserialized.FKPData) do
-                Log("Player " .. playerName .. " has " .. fkp .. " FKP")
                 local oldFKP = FKPHelper:GetFKP(playerName)
-                if oldFKP ~= nil then
-                    local delta = fkp - oldFKP
-                    FKPManagerData.FKPSpent[playerName] = -delta
-                end
+                local delta = fkp - oldFKP
+                FKPManagerData.FKPSpent[playerName] = -delta
             end
         else
             Log("Received data is older than current data. New timestamp: " .. deserialized.DataTimestamp .. ", current timestamp: " .. FKPManagerData.DataTimestamp)
