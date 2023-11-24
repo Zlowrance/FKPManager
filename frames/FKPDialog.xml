@@ -146,8 +146,8 @@
 			<Frame name="History" frameStrata="BACKGROUND">
 				<Size x="80" y="200" />
 				<Anchors>
-					<Anchor x="-70" y="-30" point="TOPLEFT" />
-					<Anchor x="-70" y="30" point="BOTTOMLEFT" />
+					<Anchor x="-70" y="-10" point="TOPLEFT" />
+					<Anchor x="-70" y="10" point="BOTTOMLEFT" />
 				</Anchors>
 				<Frames>
 					<Frame name="$parentBG" frameStrata="BACKGROUND">
@@ -212,17 +212,16 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<ScrollFrame name="$parentScrollView" inherits="ListScrollFrameTemplate" enableMouseClicks="true">
-						<Size x="49" y="520" />
+					<ScrollFrame name="$parentScrollView" inherits="UIPanelScrollFrameTemplate">
 						<Anchors>
-							<Anchor x="21" y="-10" point="TOPLEFT" />
-							<Anchor x="-10" y="10" point="BOTTOMRIGHT" />
+							<Anchor x="22" point="TOPLEFT" />
+							<Anchor x="-10" point="BOTTOMRIGHT" />
 						</Anchors>
 					</ScrollFrame>
 					<Button name="HistoryCloseButton" frameStrata="HIGH">
 						<Size x="30" y="30" />
 						<Anchors>
-							<Anchor x="-15" point="TOPLEFT" />
+							<Anchor x="-15" y="-10" point="TOPLEFT" />
 						</Anchors>
 						<NormalTexture file="Interface\AddOns\FKPManager\assets\CloseButton.png" />
 						<PushedTexture file="Interface\AddOns\FKPManager\assets\CloseButton_Pushed.png" />
@@ -230,10 +229,26 @@
 					<Button name="HistoryOpenButton" hidden="true" frameStrata="HIGH">
 						<Size x="30" y="30" />
 						<Anchors>
-							<Anchor x="-15" point="TOPLEFT" />
+							<Anchor x="-15" y="-10" point="TOPLEFT" />
 						</Anchors>
 						<NormalTexture file="Interface\AddOns\FKPManager\assets\HistoryButton.png" />
 						<PushedTexture file="Interface\AddOns\FKPManager\assets\HistoryButton_Pushed.png" />
+					</Button>
+					<Button name="HistoryClearButton">
+						<Size x="30" y="30" />
+						<Anchors>
+							<Anchor x="-15" y="-45" point="TOPLEFT" />
+						</Anchors>
+						<NormalTexture file="Interface\AddOns\FKPManager\assets\DeleteButton.png" />
+						<PushedTexture file="Interface\AddOns\FKPManager\assets\DeleteButton_Pushed.png" />
+					</Button>
+					<Button name="HistoryShareButton">
+						<Size x="30" y="30" />
+						<Anchors>
+							<Anchor x="-15" y="-80" point="TOPLEFT" />
+						</Anchors>
+						<NormalTexture file="Interface\AddOns\FKPManager\assets\ShareButton.png" />
+						<PushedTexture file="Interface\AddOns\FKPManager\assets\ShareButton_Pushed.png" />
 					</Button>
 				</Frames>
 			</Frame>

@@ -34,6 +34,11 @@ function ClearFrame(parentFrame)
         child:Hide()
         child:SetParent(nil)
     end
+
+    for _, child in ipairs({parentFrame:GetRegions()}) do
+        child:Hide()
+        child:SetParent(nil)
+    end
 end
 
 function ShowError(message)

@@ -1,6 +1,7 @@
 -- LOCAL VARS
 local BASE_ANIM_TIME = .3
 local QUICK_ANIM_TIME = .15
+local SHARE_POPUP_NAME = "FKPMANAGER_ENTER_PLAYER_NAME"
 local States = {
     IDLE = "IDLE",
     ITEM_SELECTED = "ITEM_SELECTED",
@@ -23,6 +24,7 @@ local FKPFrameHeight = 60
 local FKPFrameSpacing = 5
 local initialized = false
 local historyShown = true
+local shareMessage = nil
 
 -- INITIALIZATION
 FKPDialog:EnableMouse(true)
@@ -42,6 +44,21 @@ dropTargetFrame:SetPoint("TOPLEFT", ItemIcon, "TOPLEFT")
 dropTargetFrame:SetPoint("BOTTOMRIGHT", ItemIcon, "BOTTOMRIGHT")
 FKPDialog:EnableMouse(true)
 FKPDialog:RegisterForDrag("LeftButton")
+
+StaticPopupDialogs[SHARE_POPUP_NAME] = {
+    text = "Enter player name to share winners with:",
+    button1 = "OK",
+    button2 = "Cancel",
+    OnAccept = function(self)
+        local playerName = self.editBox:GetText()
+        SendToPlayer(shareMessage, playerName)
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,  -- Avoids some UI taint issues
+    hasEditBox = true
+}
 
 -- LOCAL FUNCTIONS
 
@@ -66,7 +83,7 @@ local function InitHistory()
         end
         local historyItem = CreateFrame("Frame", "HistoryItem" .. i, historyContent)
         historyItem:SetSize(historyItemSize, historyItemSize)
-        historyItem:SetPoint("TOPLEFT", historyContent, "TOPLEFT", 0, yOffset)
+        historyItem:SetPoint("TOP", historyContent, "TOP", 0, yOffset)
         local historyIcon = historyContent:CreateTexture("HistoryItem" .. i, "BACKGROUND")
         historyIcon:SetTexture(itemIcon)
         historyIcon:SetAllPoints(historyItem)
@@ -178,7 +195,6 @@ end
 local function LayoutBidderList()
     for i, player in ipairs(players) do
         local button = player.frame
-        local playerName = GetChildOfFrame(button, "Name")
         local yOffset = -button:GetHeight() * (i - 1) - FKPFrameSpacing * i
         button:SetPoint("TOP", contentParent, "TOP", 0, yOffset)
 	end
@@ -399,7 +415,7 @@ local function ShowHistoryPanel()
     if historyShown then
         return
     end
-    AnimationHelper:MoveBy(History, BASE_ANIM_TIME, -70, 0)
+    AnimationHelper:MoveBy(History, BASE_ANIM_TIME, -90, 0)
     HistoryOpenButton:Hide()
     HistoryCloseButton:Show()
     historyShown = true
@@ -410,7 +426,7 @@ local function HideHistoryPanel(instant)
         return
     end
     local duration = instant and 0 or BASE_ANIM_TIME
-    AnimationHelper:MoveBy(History, duration, 70, 0)
+    AnimationHelper:MoveBy(History, duration, 90, 0)
     HistoryOpenButton:Show()
     HistoryCloseButton:Hide()
     historyShown = false
@@ -419,7 +435,7 @@ end
 -- FRAME EVENT HANDLERS
 
 local function ApplyButtonPressAnimation(frame)
-    AnimationHelper:PunchScale(frame, 1.1, QUICK_ANIM_TIME)
+    -- AnimationHelper:PunchScale(frame, 1.1, QUICK_ANIM_TIME)
 end
 
 CloseButton:SetScript("OnClick", function(self, button, down)
@@ -442,6 +458,49 @@ end)
 BiddingButton:SetScript("OnClick", function(self, button, down)
     fsm:handleEvent(Events.BID_BUTTON_PRESS)
     ApplyButtonPressAnimation(BiddingButton)
+end)
+
+HistoryOpenButton:SetScript("OnClick", function(self, button, down)
+    ShowHistoryPanel()
+    ApplyButtonPressAnimation(HistoryOpenButton)
+end)
+
+HistoryCloseButton:SetScript("OnClick", function(self, button, down)
+    HideHistoryPanel()
+    ApplyButtonPressAnimation(HistoryCloseButton)
+end)
+
+HistoryClearButton:SetScript("OnClick", function(self, button, down)
+    FKPHelper:ClearPastBids()
+    InitHistory()
+    ApplyButtonPressAnimation(HistoryClearButton)
+end)
+
+HistoryShareButton:SetScript("OnClick", function(self, button, down)
+    local history = FKPHelper:GetPastBids()
+    shareMessage = "WINNERS: "
+    for i = #history, 1, -1 do
+        local _, itemLink, _, _, _, _, _, _, _, itemIcon = GetItemInfo(history[i].itemID)
+        if not itemLink or not itemIcon then
+            return
+        end
+        shareMessage = shareMessage .. itemLink .. ":"
+        local winnerFound = false
+        for _, roll in ipairs(history[i].rolls) do
+            if roll.won then
+                shareMessage = shareMessage .. roll.playerName 
+                winnerFound = true
+                break
+            end
+        end
+        
+        if not winnerFound then
+            shareMessage = shareMessage .. "No winner"
+        end
+        shareMessage = shareMessage .. ", "
+    end
+    StaticPopup_Show(SHARE_POPUP_NAME)
+    ApplyButtonPressAnimation(HistoryShareButton)
 end)
 
 FKPDialog:SetScript("OnEvent", function(self, event, message, playerName)
@@ -511,16 +570,6 @@ end)
 
 dropTargetFrame:SetScript("OnLeave", function(self)
     GameTooltip:Hide()
-end)
-
-HistoryOpenButton:SetScript("OnClick", function(self, button, down)
-    ShowHistoryPanel()
-    ApplyButtonPressAnimation(HistoryOpenButton)
-end)
-
-HistoryCloseButton:SetScript("OnClick", function(self, button, down)
-    HideHistoryPanel()
-    ApplyButtonPressAnimation(HistoryCloseButton)
 end)
 
 -- FSM SETUP

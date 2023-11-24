@@ -24,11 +24,15 @@
     <Content Include="assets\CheckButton_Pushed.png" />
     <Content Include="assets\CloseButton.png" />
     <Content Include="assets\CloseButton_Pushed.png" />
+    <Content Include="assets\DeleteButton.png" />
+    <Content Include="assets\DeleteButton_Pushed.png" />
     <Content Include="assets\FadedBG.png" />
     <Content Include="assets\fkp logo.png" />
     <Content Include="assets\FKPIcon.png" />
     <Content Include="assets\HistoryButton.png" />
     <Content Include="assets\HistoryButton_Pushed.png" />
+    <Content Include="assets\ShareButton.png" />
+    <Content Include="assets\ShareButton_Pushed.png" />
     <Content Include="assets\WhiteCircle.png" />
     <Content Include="assets\WhiteSquare.png" />
     <Content Include="download_fkp.bat" />
