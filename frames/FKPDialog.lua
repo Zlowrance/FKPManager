@@ -2,6 +2,7 @@
 local BASE_ANIM_TIME = .3
 local QUICK_ANIM_TIME = .15
 local SHARE_POPUP_NAME = "FKPMANAGER_ENTER_PLAYER_NAME"
+local CLEAR_POPUP_NAME = "FKPMANAGER_CLEAR_HISTORY"
 local States = {
     IDLE = "IDLE",
     ITEM_SELECTED = "ITEM_SELECTED",
@@ -44,21 +45,6 @@ dropTargetFrame:SetPoint("TOPLEFT", ItemIcon, "TOPLEFT")
 dropTargetFrame:SetPoint("BOTTOMRIGHT", ItemIcon, "BOTTOMRIGHT")
 FKPDialog:EnableMouse(true)
 FKPDialog:RegisterForDrag("LeftButton")
-
-StaticPopupDialogs[SHARE_POPUP_NAME] = {
-    text = "Enter player name to share winners with:",
-    button1 = "OK",
-    button2 = "Cancel",
-    OnAccept = function(self)
-        local playerName = self.editBox:GetText()
-        SendToPlayer(shareMessage, playerName)
-    end,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    preferredIndex = 3,  -- Avoids some UI taint issues
-    hasEditBox = true
-}
 
 -- LOCAL FUNCTIONS
 
@@ -471,8 +457,7 @@ HistoryCloseButton:SetScript("OnClick", function(self, button, down)
 end)
 
 HistoryClearButton:SetScript("OnClick", function(self, button, down)
-    FKPHelper:ClearPastBids()
-    InitHistory()
+    StaticPopup_Show(CLEAR_POPUP_NAME)
     ApplyButtonPressAnimation(HistoryClearButton)
 end)
 
@@ -602,3 +587,34 @@ local states = {
     },
 }
 fsm = FSM:new(states)
+
+-- POPUP SETUP
+
+StaticPopupDialogs[SHARE_POPUP_NAME] = {
+    text = "Enter player name to share winners with:",
+    button1 = "OK",
+    button2 = "Cancel",
+    OnAccept = function(self)
+        local playerName = self.editBox:GetText()
+        SendToPlayer(shareMessage, playerName)
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,  -- Avoids some UI taint issues
+    hasEditBox = true
+}
+
+StaticPopupDialogs[CLEAR_POPUP_NAME] = {
+    text = "Are you sure you want to clear the history?",
+    button1 = "Yes",
+    button2 = "No",
+    OnAccept = function(self)
+        FKPHelper:ClearPastBids()
+        InitHistory()
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    preferredIndex = 3,  -- Avoids some UI taint issues
+}
