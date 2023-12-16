@@ -159,7 +159,7 @@ local function AddBid(playerName)
     if GetPlayerIndex(playerName) ~= nil then
         return
     end
-    table.insert(players, {name = playerName, fkp = FKPHelper:GetFKP(playerName), roll = 0, frame = nil})
+    table.insert(players, {name = playerName, fkp = FKPHelper:GetFKP(playerName), roll = 0, frame = nil, fkpIndex = 0})
     Log(playerName .. " added to the bid list.")
 end
 
@@ -193,7 +193,8 @@ local function InitBidderList()
     for index, player in ipairs(players) do
         local button = player.frame or GetFKPListFrame()
         player.frame = button
-
+        player.fkpIndex = index
+        
         local playerPortrait = GetChildOfFrame(button, "Portrait")
         local playerName = GetChildOfFrame(button, "Name")
         local playerFKP = GetChildOfFrame(button, "FKP")
@@ -250,7 +251,8 @@ local function SetPlayerRoll(playerName, roll, topEnd)
         Log(playerName .. " tried to roll again")
 	    return
 	end
-    local targetTopEnd = GetTopEndRoll(playerIndex - 1)
+    local fkpIndex = player.fkpIndex
+    local targetTopEnd = GetTopEndRoll(fkpIndex - 1)
 
     if topEnd ~= targetTopEnd then  
 		SendToRaid(playerName .. " ROLLED OUT OF " .. topEnd .. " INSTEAD OF " .. targetTopEnd .. "!! SHAME!!")
@@ -348,15 +350,15 @@ local function BIDDING_ENDED_Enter(fsm)
         SendToRaid("1-" .. topEnd .. "  " .. player.name)
         index = index + 1
     end
-
-    index = 0
-    for _, player in ipairs(players) do
-        local topEnd = GetTopEndRoll(index)
-        SendToPlayer("roll 1-" .. topEnd, player.name)
-        index = index + 1
-    end
     SendToRaid("======================")
 
+    --index = 0
+    --for _, player in ipairs(players) do
+    --    local topEnd = GetTopEndRoll(index)
+    --    SendToPlayer("roll 1-" .. topEnd, player.name)
+    --    index = index + 1
+    --end
+    
     BiddingButton:Disable()
     ItemName:SetText("vv Select Winner vv")
 
