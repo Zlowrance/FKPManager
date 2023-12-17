@@ -23,5 +23,5 @@ AnimationHelper.lua
 # frames
 frames/FKPListTemplate.xml
 frames/FKPListTemplate.lua
-frames/FKPDialog.xml
 frames/FKPDialog.lua
+frames/FKPDialog.xml

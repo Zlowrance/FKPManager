@@ -1,6 +1,8 @@
 -- Author      : zachl
 -- Create Date : 11/14/2023 2:58:00 PM
 
+FKPManagerData = {DataTimestamp = 0, FKPSpent = {}, PastBids = {}}
+
 local DATA_UPDATED_KEY = "DATALASTUPDATED"
 
 FKPHelper = {}

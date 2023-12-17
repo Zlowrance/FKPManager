@@ -14,7 +14,8 @@ local Events = {
     BID_BUTTON_PRESS = "BID_BUTTON_PRESS",
     CHAT_MSG_RECEIVED = "CHAT_MSG_RECEIVED",
     SYSTEM_MSG_RECEIVED = "SYSTEM_MSG_RECEIVED",
-    ITEM_AREA_CLICKED = "ITEM_AREA_CLICKED"
+    ITEM_AREA_CLICKED = "ITEM_AREA_CLICKED",
+    ITEM_ALT_CLICKED = "ITEM_ALT_CLICKED"
 }
 
 local fsm = nil
@@ -23,29 +24,12 @@ local currentItem = {}
 local unusedFrames = {}
 local FKPFrameHeight = 60
 local FKPFrameSpacing = 5
-local initialized = false
 local historyShown = true
 local shareMessage = nil
 local addonVersion = C_AddOns.GetAddOnMetadata("FKPManager", "Version")
-
--- INITIALIZATION
-FKPDialog:EnableMouse(true)
-FKPDialog:RegisterForDrag("LeftButton")
-
-local contentParent = CreateFrame("Frame")
-local scrollWidth = ScrollFrame1:GetWidth()
-ScrollFrame1:SetScrollChild(contentParent)
-contentParent:SetWidth(scrollWidth)
-contentParent:SetHeight(1)
-
-BiddingButton:Disable()
-
-local dropTargetFrame = CreateFrame("Frame", "ItemDropTargetFrame", FKPDialog)
-dropTargetFrame:SetSize(100, 100) 
-dropTargetFrame:SetPoint("TOPLEFT", ItemIcon, "TOPLEFT")
-dropTargetFrame:SetPoint("BOTTOMRIGHT", ItemIcon, "BOTTOMRIGHT")
-FKPDialog:EnableMouse(true)
-FKPDialog:RegisterForDrag("LeftButton")
+local dropTargetFrame = nil
+local contentParent = nil
+local scrollWidth = nil
 
 -- LOCAL FUNCTIONS
 
@@ -339,6 +323,13 @@ local function IDLE_ITEM_AREA_CLICKED(fsm, button)
     end
 end
 
+local function IDLE_ITEM_ALT_CLICKED(fsm, itemID)
+    if not FKPDialog:IsShown() then
+        FKPDialog:Show()
+    end
+    ItemSelected(itemID)
+end
+
 local function ITEM_SELECTED_Enter(fsm)
     ClearItemButton:Show()
     BiddingButton:Enable()
@@ -458,156 +449,169 @@ local function HideHistoryPanel(instant)
     historyShown = false
 end
 
--- FRAME EVENT HANDLERS
-
 local function ApplyButtonPressAnimation(frame)
     -- AnimationHelper:PunchScale(frame, 1.1, QUICK_ANIM_TIME)
 end
 
-CloseButton:SetScript("OnClick", function(self, button, down)
+function FKPDialog_OnLoad()
+    -- INITIALIZATION
+    FKPDialog:EnableMouse(true)
+    FKPDialog:RegisterForDrag("LeftButton")
     FKPDialog:SetClampedToScreen(false)
     FKPDialog:SetMovable(false)
-    local startX, startY = FKPDialog:GetCenter()
-    local handle = AnimationHelper:SlideOut(FKPDialog, BASE_ANIM_TIME, AnimationDirection.DOWN, nil, function()
-        FKPDialog:Hide()
-        FKPDialog:ClearAllPoints()
-        FKPDialog:SetPoint("CENTER", UIParent, "BOTTOMLEFT", startX, startY)
-    end)
-    ApplyButtonPressAnimation(CloseButton)
-end)
 
-ClearItemButton:SetScript("OnClick", function(self, button, down)
-    fsm:setState(States.IDLE)
-    ApplyButtonPressAnimation(ClearItemButton)
-end)
-
-BiddingButton:SetScript("OnClick", function(self, button, down)
-    fsm:handleEvent(Events.BID_BUTTON_PRESS)
-    ApplyButtonPressAnimation(BiddingButton)
-end)
-
-HistoryOpenButton:SetScript("OnClick", function(self, button, down)
-    ShowHistoryPanel()
-    ApplyButtonPressAnimation(HistoryOpenButton)
-end)
-
-HistoryCloseButton:SetScript("OnClick", function(self, button, down)
-    HideHistoryPanel()
-    ApplyButtonPressAnimation(HistoryCloseButton)
-end)
-
-HistoryClearButton:SetScript("OnClick", function(self, button, down)
-    StaticPopup_Show(CLEAR_POPUP_NAME)
-    ApplyButtonPressAnimation(HistoryClearButton)
-end)
-
-HistoryShareButton:SetScript("OnClick", function(self, button, down)
-    local history = FKPHelper:GetPastBids()
-    shareMessage = "WINNERS: "
-    for i = #history, 1, -1 do
-        local _, itemLink, _, _, _, _, _, _, _, itemIcon = GetItemInfo(history[i].itemID)
-        if not itemLink or not itemIcon then
-            return
-        end
-        shareMessage = shareMessage .. itemLink .. ":"
-        local winnerFound = false
-        for _, roll in ipairs(history[i].rolls) do
-            if roll.won then
-                shareMessage = shareMessage .. roll.playerName 
-                winnerFound = true
-                break
-            end
-        end
-        
-        if not winnerFound then
-            shareMessage = shareMessage .. "No winner"
-        end
-        shareMessage = shareMessage .. ", "
-    end
-    StaticPopup_Show(SHARE_POPUP_NAME)
-    ApplyButtonPressAnimation(HistoryShareButton)
-end)
-
-FKPDialog:SetScript("OnEvent", function(self, event, message, playerName)
-    if event == "CHAT_MSG_SYSTEM" then
-        fsm:handleEvent(Events.SYSTEM_MSG_RECEIVED, message)
-        return
-    end
-
-    local shouldHandle = false
-
-    for index, value in ipairs(CHAT_EVENT_TYPES) do
-        if value == event then
-            shouldHandle = true
-            break
-        end
-    end
-
-    if not shouldHandle then
-        return
-    end
-
-    fsm:handleEvent(Events.CHAT_MSG_RECEIVED, message, playerName)
-end)
-
-FKPDialog:SetScript("OnShow", function(self)
-    FKPDialog:SetClampedToScreen(false)
-    FKPDialog:SetMovable(false)
-    local handle = AnimationHelper:SlideIn(FKPDialog, BASE_ANIM_TIME, AnimationDirection.UP, nil, function()
-        FKPDialog:SetClampedToScreen(true)
-        FKPDialog:SetMovable(true)
-    end)
+    BiddingButton:Disable()
+    
     InitHistory()
     HideHistoryPanel(true)
     
     local versionText = "v" .. addonVersion
     VersionDisplay:SetText(versionText)
-    
-    if initialized then
-        return
-    end
+
+    dropTargetFrame = CreateFrame("Frame", "ItemDropTargetFrame", FKPDialog)
+    dropTargetFrame:SetSize(100, 100)
+    dropTargetFrame:SetPoint("TOPLEFT", ItemIcon, "TOPLEFT")
+    dropTargetFrame:SetPoint("BOTTOMRIGHT", ItemIcon, "BOTTOMRIGHT")
+    contentParent = CreateFrame("Frame")
+    scrollWidth = ScrollFrame1:GetWidth()
+    ScrollFrame1:SetScrollChild(contentParent)
+    contentParent:SetWidth(scrollWidth)
+    contentParent:SetHeight(1)
+
     fsm:setState(States.IDLE)
-    initialized = true
-end)
+    
+    -- FRAME EVENT HANDLERS
+    CloseButton:SetScript("OnClick", function(self, button, down)
+        FKPDialog:SetClampedToScreen(false)
+        FKPDialog:SetMovable(false)
+        local startX, startY = FKPDialog:GetCenter()
+        local handle = AnimationHelper:SlideOut(FKPDialog, BASE_ANIM_TIME, AnimationDirection.DOWN, nil, function()
+            FKPDialog:Hide()
+            FKPDialog:ClearAllPoints()
+            FKPDialog:SetPoint("CENTER", UIParent, "BOTTOMLEFT", startX, startY)
+        end)
+        ApplyButtonPressAnimation(CloseButton)
+    end)
 
-FKPDialog:SetScript("OnMouseDown", function(self)
-    if not FKPDialog:IsMovable() then
-        return
-    end
-    self:StartMoving()
-end)
+    ClearItemButton:SetScript("OnClick", function(self, button, down)
+        fsm:setState(States.IDLE)
+        ApplyButtonPressAnimation(ClearItemButton)
+    end)
 
-FKPDialog:SetScript("OnMouseUp", function(self)
-    if not FKPDialog:IsMovable() then
-        return
-    end
-    self:StopMovingOrSizing()
-end)
+    BiddingButton:SetScript("OnClick", function(self, button, down)
+        fsm:handleEvent(Events.BID_BUTTON_PRESS)
+        ApplyButtonPressAnimation(BiddingButton)
+    end)
 
-dropTargetFrame:SetScript("OnMouseDown", function(self, button)
-    fsm:handleEvent(Events.ITEM_AREA_CLICKED, button)
-end)
+    HistoryOpenButton:SetScript("OnClick", function(self, button, down)
+        ShowHistoryPanel()
+        ApplyButtonPressAnimation(HistoryOpenButton)
+    end)
 
-dropTargetFrame:SetScript("OnEnter", function(self)
-    if currentItem == nil then
-        return
-    end
-    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:SetItemByID(currentItem.id)
-    GameTooltip:Show()
-end)
+    HistoryCloseButton:SetScript("OnClick", function(self, button, down)
+        HideHistoryPanel()
+        ApplyButtonPressAnimation(HistoryCloseButton)
+    end)
 
-dropTargetFrame:SetScript("OnLeave", function(self)
-    GameTooltip:Hide()
-end)
+    HistoryClearButton:SetScript("OnClick", function(self, button, down)
+        StaticPopup_Show(CLEAR_POPUP_NAME)
+        ApplyButtonPressAnimation(HistoryClearButton)
+    end)
 
-hooksecurefunc("HandleModifiedItemClick", function(itemLink)
-    if IsAltKeyDown() then
-        local _, id = string.match(itemLink, "(%a+):(%d+)") 
-        ItemSelected(id)
-    end
-end)
+    HistoryShareButton:SetScript("OnClick", function(self, button, down)
+        local history = FKPHelper:GetPastBids()
+        shareMessage = "WINNERS: "
+        for i = #history, 1, -1 do
+            local _, itemLink, _, _, _, _, _, _, _, itemIcon = GetItemInfo(history[i].itemID)
+            if not itemLink or not itemIcon then
+                return
+            end
+            shareMessage = shareMessage .. itemLink .. ":"
+            local winnerFound = false
+            for _, roll in ipairs(history[i].rolls) do
+                if roll.won then
+                    shareMessage = shareMessage .. roll.playerName
+                    winnerFound = true
+                    break
+                end
+            end
 
+            if not winnerFound then
+                shareMessage = shareMessage .. "No winner"
+            end
+            shareMessage = shareMessage .. ", "
+        end
+        StaticPopup_Show(SHARE_POPUP_NAME)
+        ApplyButtonPressAnimation(HistoryShareButton)
+    end)
+
+    FKPDialog:SetScript("OnEvent", function(self, event, message, playerName)
+        if event == "CHAT_MSG_SYSTEM" then
+            fsm:handleEvent(Events.SYSTEM_MSG_RECEIVED, message)
+            return
+        end
+
+        local shouldHandle = false
+
+        for index, value in ipairs(CHAT_EVENT_TYPES) do
+            if value == event then
+                shouldHandle = true
+                break
+            end
+        end
+
+        if not shouldHandle then
+            return
+        end
+
+        fsm:handleEvent(Events.CHAT_MSG_RECEIVED, message, playerName)
+    end)
+
+    FKPDialog:SetScript("OnShow", function(self)
+        AnimationHelper:SlideIn(FKPDialog, BASE_ANIM_TIME, AnimationDirection.UP, nil, function()
+            FKPDialog:SetClampedToScreen(true)
+            FKPDialog:SetMovable(true)
+        end)
+    end)
+    
+    FKPDialog:SetScript("OnMouseDown", function(self)
+        if not FKPDialog:IsMovable() then
+            return
+        end
+        self:StartMoving()
+    end)
+
+    FKPDialog:SetScript("OnMouseUp", function(self)
+        if not FKPDialog:IsMovable() then
+            return
+        end
+        self:StopMovingOrSizing()
+    end)
+    
+    dropTargetFrame:SetScript("OnMouseDown", function(self, button)
+        fsm:handleEvent(Events.ITEM_AREA_CLICKED, button)
+    end)
+
+    dropTargetFrame:SetScript("OnEnter", function(self)
+        if currentItem == nil then
+            return
+        end
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetItemByID(currentItem.id)
+        GameTooltip:Show()
+    end)
+
+    dropTargetFrame:SetScript("OnLeave", function(self)
+        GameTooltip:Hide()
+    end)
+
+    hooksecurefunc("HandleModifiedItemClick", function(itemLink)
+        if IsAltKeyDown() then
+            local _, id = string.match(itemLink, "(%a+):(%d+)")
+            fsm:handleEvent(Events.ITEM_ALT_CLICKED, id)
+        end
+    end)
+end
 
 -- FSM SETUP
 
@@ -615,13 +619,15 @@ local states = {
     [States.IDLE] = {
         enter = IDLE_Enter,
         events = {
-            [Events.ITEM_AREA_CLICKED] = IDLE_ITEM_AREA_CLICKED
+            [Events.ITEM_AREA_CLICKED] = IDLE_ITEM_AREA_CLICKED,
+            [Events.ITEM_ALT_CLICKED] = IDLE_ITEM_ALT_CLICKED
         }
     },
     [States.ITEM_SELECTED] = {
         enter = ITEM_SELECTED_Enter,
         events = {
-			[Events.BID_BUTTON_PRESS] = ITEM_SELECTED_BID_BUTTON_PRESS
+			[Events.BID_BUTTON_PRESS] = ITEM_SELECTED_BID_BUTTON_PRESS,
+            [Events.ITEM_ALT_CLICKED] = IDLE_ITEM_ALT_CLICKED
 		}
     },
     [States.BIDDING_STARTED] = {
