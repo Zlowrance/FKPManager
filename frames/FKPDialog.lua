@@ -299,6 +299,14 @@ local function SetPlayerRoll(playerName, roll, topEnd)
     LayoutBidderList()
 end
 
+local function ItemSelected(itemId)
+    if itemId == nil then
+        return
+    end
+    UpdateItemDisplay(itemId)
+    fsm:setState(States.ITEM_SELECTED)
+end
+
 -- STATE FUNCS
 
 local function IDLE_Enter(fsm)
@@ -323,8 +331,7 @@ local function IDLE_ITEM_AREA_CLICKED(fsm, button)
 	end
     Log(cursorType .. itemId .. link)
     if cursorType == "item" then
-        UpdateItemDisplay(itemId)
-        fsm:setState(States.ITEM_SELECTED)
+        ItemSelected(itemId)
         ClearCursor() 
     end
 end
@@ -594,6 +601,14 @@ end)
 dropTargetFrame:SetScript("OnLeave", function(self)
     GameTooltip:Hide()
 end)
+
+hooksecurefunc("HandleModifiedItemClick", function(itemLink)
+    if IsAltKeyDown() then
+        local _, id = string.match(itemLink, "(%a+):(%d+)") 
+        ItemSelected(id)
+    end
+end)
+
 
 -- FSM SETUP
 
