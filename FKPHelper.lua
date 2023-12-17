@@ -61,7 +61,7 @@ function FKPHelper:Deserialize(serializedString)
     local newData = {}
     local timestamp = 0
 
-    for key, value in string.gmatch(serializedString, "(%w+):(%d+);") do
+    for key, value in string.gmatch(serializedString, "(%w+):(-?%d+);") do
         if key == DATA_UPDATED_KEY then
             timestamp = tonumber(value)
         else
