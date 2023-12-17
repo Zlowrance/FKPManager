@@ -76,26 +76,28 @@ local function OnAddonMessage(prefix, message, channel, sender)
     receivedChunks[part] = chunk
 
     -- Check if all chunks are received
-    if #receivedChunks == total then
-        local fullMessage = table.concat(receivedChunks)
-        local deserialized = FKPHelper:Deserialize(fullMessage)
-        if not deserialized then
-            Log("Failed to deserialize message")
-            return
-        end
-        if deserialized.DataTimestamp > FKPManagerData.DataTimestamp then
-            Log("Received new data")
-            -- for each player in the new data, apply an FKP delta to local storage for the difference between the new and old FKP
-            FKPManagerData.FKPSpent = {}
-            FKPManagerData.DataTimestamp = deserialized.DataTimestamp
-            for playerName, fkp in pairs(deserialized.FKPData) do
-                local oldFKP = FKPHelper:GetFKP(playerName)
-                local delta = fkp - oldFKP
-                FKPManagerData.FKPSpent[playerName] = -delta
-            end
-        else
-            Log("Received data is older than current data. New timestamp: " .. deserialized.DataTimestamp .. ", current timestamp: " .. FKPManagerData.DataTimestamp)
-        end
+    if #receivedChunks < total then
+        return
+    end
+
+    local fullMessage = table.concat(receivedChunks)
+    local deserialized = FKPHelper:Deserialize(fullMessage)
+    if not deserialized then
+        Log("Failed to deserialize message")
+        return
+    end
+    if deserialized.DataTimestamp <= FKPManagerData.DataTimestamp then
+        Log("Received data is older than current data. New timestamp: " .. deserialized.DataTimestamp .. ", current timestamp: " .. FKPManagerData.DataTimestamp)
+        return
+    end
+    Log("Received new data")
+    -- for each player in the new data, apply an FKP delta to local storage for the difference between the new and old FKP
+    FKPManagerData.FKPSpent = {}
+    FKPManagerData.DataTimestamp = deserialized.DataTimestamp
+    for playerName, fkp in pairs(deserialized.FKPData) do
+        local oldFKP = FKPHelper:GetFKP(playerName)
+        local delta = fkp - oldFKP
+        FKPManagerData.FKPSpent[playerName] = -delta
     end
 end
 

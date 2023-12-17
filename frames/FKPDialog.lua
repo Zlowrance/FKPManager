@@ -83,8 +83,16 @@ local function InitHistory()
                     icon = "Interface\\GROUPFRAME\\UI-Group-LeaderIcon"
                 end
                 local iconString = icon and "|T" .. icon .. ":0|t" or nil
-                GameTooltip:AddLine(iconString .. roll.playerName, 1, 1, 1)
-                GameTooltip:AddLine("    rolled " .. roll.roll, .5, .5, .5)
+                if iconString then
+                    GameTooltip:AddLine(iconString .. roll.playerName, 1, 1, 1)
+                else
+                    GameTooltip:AddLine(roll.playerName, 1, 1, 1)
+                end
+                if roll.won then
+                    GameTooltip:AddLine("    rolled " .. roll.roll, 1, 1, 0)
+                else
+                    GameTooltip:AddLine("    rolled " .. roll.roll, .5, .5, .5)
+                end
             end
             GameTooltip:Show()
         end)
@@ -133,8 +141,11 @@ local function ReleaseFKPListFrame(frame)
     table.insert(unusedFrames, frame)
 end
 
-local function GetTopEndRoll(index)
-     return 100 - (math.min(index,5) * 10)
+--- Returns the top end of the roll range for the player
+--- @param player table
+--- @return number
+local function GetTopEndRoll(player)
+     return 100 - (math.min(player.fkpIndex,5) * 10)
 end
 
 local function UpdateItemDisplay(itemId)
@@ -183,17 +194,35 @@ local function LayoutBidderList()
         local button = player.frame
         local yOffset = -button:GetHeight() * (i - 1) - FKPFrameSpacing * i
         button:SetPoint("TOP", contentParent, "TOP", 0, yOffset)
+        if fsm:getState() == States.BIDDING_ENDED and player.roll > 0 then
+            local playerRoll = GetChildOfFrame(button, "Roll")
+            if i == 1 then
+                playerRoll:SetTextColor(1, 1, 0)
+            else
+                playerRoll:SetTextColor(1, 1, 1)
+            end
+        end
 	end
 end
 
 local function InitBidderList()
     -- Sort players by fkp
     table.sort(players, function(a, b) return a.fkp > b.fkp end)
-
+    local fkpIndex = 0
+    local currentFkp = nil
     for index, player in ipairs(players) do
+        if currentFkp == nil then
+            currentFkp = player.fkp
+        end
+        
+        if player.fkp < currentFkp then
+            fkpIndex = fkpIndex + 1
+            currentFkp = player.fkp
+        end
+        
         local button = player.frame or GetFKPListFrame()
         player.frame = button
-        player.fkpIndex = index
+        player.fkpIndex = fkpIndex
         
         local playerPortrait = GetChildOfFrame(button, "Portrait")
         local playerName = GetChildOfFrame(button, "Name")
@@ -205,11 +234,12 @@ local function InitBidderList()
         removeButton:Show()
         winnerButton:Hide()
 
-        local topEnd = GetTopEndRoll(index - 1)
+        local topEnd = GetTopEndRoll(player)
         playerName:SetText(player.name)
         playerFKP:SetText(player.fkp)
         playerRoll:SetText("rolls 1-" .. topEnd)
-
+        playerRoll:SetTextColor(0.878, 0.878, 0.878)
+        
         local unitID = GetRaidMemberUnitIDFromName(player.name)
         if unitID then
             SetPortraitTexture(playerPortrait, unitID)
@@ -251,8 +281,7 @@ local function SetPlayerRoll(playerName, roll, topEnd)
         Log(playerName .. " tried to roll again")
 	    return
 	end
-    local fkpIndex = player.fkpIndex
-    local targetTopEnd = GetTopEndRoll(fkpIndex - 1)
+    local targetTopEnd = GetTopEndRoll(player)
 
     if topEnd ~= targetTopEnd then  
 		SendToRaid(playerName .. " ROLLED OUT OF " .. topEnd .. " INSTEAD OF " .. targetTopEnd .. "!! SHAME!!")
@@ -321,7 +350,9 @@ local function BIDDING_STARTED_BID_BUTTON_PRESS(fsm)
 end
 
 local function BIDDING_STARTED_CHAT_MSG_RECEIVED(fsm, message, playerName)
-    if not string.match(message, "^" .. BID_MSG .. "$") then
+    local lowerCase = string.lower(message)
+    local bidMsg = string.lower(BID_MSG)
+    if not string.match(lowerCase, "^" .. bidMsg .. "$") then
         -- Debug feature for test bids
         if DEBUG and string.match(message, "testbid (%a+)") then
             AddBid(string.match(message, "testbid (%a+)"))
@@ -346,7 +377,7 @@ local function BIDDING_ENDED_Enter(fsm)
     -- separate these so players get their whisper after the raid dump
 	local index = 0
     for _, player in ipairs(players) do
-        local topEnd = GetTopEndRoll(index)
+        local topEnd = GetTopEndRoll(player)
         SendToRaid("1-" .. topEnd .. "  " .. player.name)
         index = index + 1
     end
@@ -354,7 +385,7 @@ local function BIDDING_ENDED_Enter(fsm)
 
     --index = 0
     --for _, player in ipairs(players) do
-    --    local topEnd = GetTopEndRoll(index)
+    --    local topEnd = GetTopEndRoll(player)
     --    SendToPlayer("roll 1-" .. topEnd, player.name)
     --    index = index + 1
     --end

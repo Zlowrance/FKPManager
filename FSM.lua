@@ -8,6 +8,7 @@ function FSM:new(states)
     local fsm = setmetatable({}, FSM)
     fsm.states = states or {}
     fsm.currentState = nil
+    fsm.currentStateName = nil
     return fsm
 end
 
@@ -24,11 +25,16 @@ function FSM:setState(stateName, ...)
     end
 
     self.currentState = state
+    self.currentStateName = stateName
 
     -- Call the enter function of the new state if it exists
     if state.enter then
         state.enter(self, ...)
     end
+end
+
+function FSM:getState()
+    return self.currentStateName
 end
 
 function FSM:update(...)
