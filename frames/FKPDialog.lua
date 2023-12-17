@@ -52,6 +52,7 @@ local function InitHistory()
         if not itemLink or not itemIcon then
             return
         end
+        Log("creating history item " .. i .. " for " .. history[i].itemID .. " " .. DumpTable(history[i].rolls))
         local historyItem = CreateFrame("Frame", "HistoryItem" .. i, historyContent)
         historyItem:SetSize(historyItemSize, historyItemSize)
         historyItem:SetPoint("TOP", historyContent, "TOP", 0, yOffset)
@@ -73,10 +74,11 @@ local function InitHistory()
                 else
                     GameTooltip:AddLine(roll.playerName, 1, 1, 1)
                 end
+                local rollText = "    " .. (roll.roll > 0 and ("rolled " .. roll.roll) or "did not roll")
                 if roll.won then
-                    GameTooltip:AddLine("    rolled " .. roll.roll, 1, 1, 0)
+                    GameTooltip:AddLine(rollText, 1, 1, 0)
                 else
-                    GameTooltip:AddLine("    rolled " .. roll.roll, .5, .5, .5)
+                    GameTooltip:AddLine(rollText, .5, .5, .5)
                 end
             end
             GameTooltip:Show()
@@ -410,8 +412,9 @@ local function BIDDING_ENDED_Enter(fsm)
             SendToRaid(player.name .. " wins " .. currentItem.link .. "!!")
             local rolls = {}
             for i = 1, #players do
-                if players[i].roll > 0 then
-                    table.insert(rolls, {playerName = players[i].name, roll = players[i].roll, won = players[i].name == player.name})
+                local won = players[i].name == player.name
+                if players[i].roll > 0 or won then
+                    table.insert(rolls, {playerName = players[i].name, roll = players[i].roll, won = won})
                 end
             end
             FKPHelper:AddPastBid(currentItem.id, rolls)
@@ -462,9 +465,6 @@ function FKPDialog_OnLoad()
 
     BiddingButton:Disable()
     
-    InitHistory()
-    HideHistoryPanel(true)
-    
     local versionText = "v" .. addonVersion
     VersionDisplay:SetText(versionText)
 
@@ -478,9 +478,55 @@ function FKPDialog_OnLoad()
     contentParent:SetWidth(scrollWidth)
     contentParent:SetHeight(1)
 
+    HideHistoryPanel(true)
+    
     fsm:setState(States.IDLE)
     
     -- FRAME EVENT HANDLERS
+    FKPDialog:SetScript("OnShow", function(self)
+        InitHistory()
+        AnimationHelper:SlideIn(FKPDialog, BASE_ANIM_TIME, AnimationDirection.UP, nil, function()
+            FKPDialog:SetClampedToScreen(true)
+            FKPDialog:SetMovable(true)
+        end)
+    end)
+
+    FKPDialog:SetScript("OnEvent", function(self, event, message, playerName)
+        if event == "CHAT_MSG_SYSTEM" then
+            fsm:handleEvent(Events.SYSTEM_MSG_RECEIVED, message)
+            return
+        end
+
+        local shouldHandle = false
+
+        for _, value in ipairs(CHAT_EVENT_TYPES) do
+            if value == event then
+                shouldHandle = true
+                break
+            end
+        end
+
+        if not shouldHandle then
+            return
+        end
+
+        fsm:handleEvent(Events.CHAT_MSG_RECEIVED, message, playerName)
+    end)
+
+    FKPDialog:SetScript("OnMouseDown", function(self)
+        if not FKPDialog:IsMovable() then
+            return
+        end
+        self:StartMoving()
+    end)
+
+    FKPDialog:SetScript("OnMouseUp", function(self)
+        if not FKPDialog:IsMovable() then
+            return
+        end
+        self:StopMovingOrSizing()
+    end)
+
     CloseButton:SetScript("OnClick", function(self, button, down)
         FKPDialog:SetClampedToScreen(false)
         FKPDialog:SetMovable(false)
@@ -543,49 +589,6 @@ function FKPDialog_OnLoad()
         end
         StaticPopup_Show(SHARE_POPUP_NAME)
         ApplyButtonPressAnimation(HistoryShareButton)
-    end)
-
-    FKPDialog:SetScript("OnEvent", function(self, event, message, playerName)
-        if event == "CHAT_MSG_SYSTEM" then
-            fsm:handleEvent(Events.SYSTEM_MSG_RECEIVED, message)
-            return
-        end
-
-        local shouldHandle = false
-
-        for index, value in ipairs(CHAT_EVENT_TYPES) do
-            if value == event then
-                shouldHandle = true
-                break
-            end
-        end
-
-        if not shouldHandle then
-            return
-        end
-
-        fsm:handleEvent(Events.CHAT_MSG_RECEIVED, message, playerName)
-    end)
-
-    FKPDialog:SetScript("OnShow", function(self)
-        AnimationHelper:SlideIn(FKPDialog, BASE_ANIM_TIME, AnimationDirection.UP, nil, function()
-            FKPDialog:SetClampedToScreen(true)
-            FKPDialog:SetMovable(true)
-        end)
-    end)
-    
-    FKPDialog:SetScript("OnMouseDown", function(self)
-        if not FKPDialog:IsMovable() then
-            return
-        end
-        self:StartMoving()
-    end)
-
-    FKPDialog:SetScript("OnMouseUp", function(self)
-        if not FKPDialog:IsMovable() then
-            return
-        end
-        self:StopMovingOrSizing()
     end)
     
     dropTargetFrame:SetScript("OnMouseDown", function(self, button)
