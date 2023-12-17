@@ -316,6 +316,9 @@ local function IDLE_Enter(fsm)
     BiddingButton:Disable()
     Instructions:Show()
     BiddingButtonText:SetText("Start Bidding")
+    for _, player in ipairs(players) do
+        ReleaseFKPListFrame(player.frame)
+    end
     players = {}
     InitBidderList()
 end
@@ -347,7 +350,6 @@ local function ITEM_SELECTED_BID_BUTTON_PRESS(fsm)
 end
 
 local function BIDDING_STARTED_Enter(fsm)
-    ClearItemButton:Hide()
     SendToRaid("BIDDING START: " .. currentItem.link)
     SendToRaid("TO BID SAY: " .. BID_MSG)
     BiddingButtonText:SetText("End Bidding")
@@ -414,9 +416,6 @@ local function BIDDING_ENDED_Enter(fsm)
 
         winnerButton:SetScript("OnClick", function(self, button, down)
             FKPHelper:SpendFKP(player.name, FKP_ITEM_COST)
-            for _, player in ipairs(players) do
-                ReleaseFKPListFrame(player.frame)
-			end
             SendToRaid(player.name .. " wins " .. currentItem.link .. "!!")
             local rolls = {}
             for i = 1, #players do
