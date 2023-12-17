@@ -56,14 +56,14 @@
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="ItemName" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="Select Item">
-					<Size x="200" y="20" />
+				<FontString name="VersionDisplay" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="v0.0.0" justifyV="BOTTOM" justifyH="LEFT">
+					<Size x="102" y="20" />
 					<Anchors>
-						<Anchor y="-191" point="TOP" />
+						<Anchor x="5" point="BOTTOMLEFT" />
 					</Anchors>
 					<FontHeight val="18" />
-					<Color r="1" g="1" b="1" />
-					<Shadow x="2" y="-2">
+					<Color />
+					<Shadow>
 						<Color />
 					</Shadow>
 				</FontString>
@@ -124,6 +124,17 @@
 								<Anchor point="CENTER" />
 							</Anchors>
 							<FontHeight val="20" />
+							<Color r="1" g="1" b="1" />
+							<Shadow x="2" y="-2">
+								<Color />
+							</Shadow>
+						</FontString>
+						<FontString name="ItemName" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="Select Item">
+							<Size x="200" y="20" />
+							<Anchors>
+								<Anchor y="-290" point="TOP" />
+							</Anchors>
+							<FontHeight val="18" />
 							<Color r="1" g="1" b="1" />
 							<Shadow x="2" y="-2">
 								<Color />

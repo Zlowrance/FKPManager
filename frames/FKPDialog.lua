@@ -26,6 +26,7 @@ local FKPFrameSpacing = 5
 local initialized = false
 local historyShown = true
 local shareMessage = nil
+local addonVersion = C_AddOns.GetAddOnMetadata("FKPManager", "Version")
 
 -- INITIALIZATION
 FKPDialog:EnableMouse(true)
@@ -552,6 +553,10 @@ FKPDialog:SetScript("OnShow", function(self)
     end)
     InitHistory()
     HideHistoryPanel(true)
+    
+    local versionText = "v" .. addonVersion
+    VersionDisplay:SetText(versionText)
+    
     if initialized then
         return
     end
