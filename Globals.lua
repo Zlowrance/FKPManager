@@ -2,7 +2,8 @@ DEBUG=false
 
 ADDON_MSG_CHANNEL = "GUILD" -- debug: "PARTY"
 BID_MSG = "bid"
-CHAT_TYPE_RAID = "RAID" -- debug: "SAY"
+CHAT_TYPE_RAID = "RAID"
+CHAT_TYPE_RAID_WARNING = "RAID_WARNING"
 CHAT_EVENT_TYPES = {"CHAT_MSG_RAID", "CHAT_MSG_RAID_LEADER"} -- debug: , "CHAT_MSG_SAY"
 ADDON_NAME = "FKPManager"
 FKP_ITEM_COST = 10
@@ -26,7 +27,13 @@ end
 
 function SendToRaid(message)
     -- message: The message you want to send to raid
-    SendChatMessage(message, CHAT_TYPE_RAID)
+    if IsInRaid() then
+        if UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") then
+            SendChatMessage(message, CHAT_TYPE_RAID_WARNING)
+        else
+            SendChatMessage(message, CHAT_TYPE_RAID)
+        end
+    end
 end
 
 function ClearFrame(parentFrame)

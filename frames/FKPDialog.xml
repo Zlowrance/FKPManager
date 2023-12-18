@@ -9,11 +9,6 @@
 			<BackgroundInsets left="4" right="4" top="4" bottom="4" />
 			<EdgeSize val="16" />
 		</Backdrop>
-		<Scripts>
-			<OnLoad>
-				FKPDialog_OnLoad();
-			</OnLoad>
-		</Scripts>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture name="BG" setAllPoints="true" file="Interface\AddOns\FKPManager\assets\Bg.png" horizTile="true" vertTile="true">
@@ -59,17 +54,17 @@
 						<Anchor y="100" point="TOP" />
 					</Anchors>
 				</Texture>
-        <FontString name="ItemName" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="Select Item">
-          <Size x="200" y="20" />
-          <Anchors>
-            <Anchor x="100" y="-190" point="TOPLEFT" />
-          </Anchors>
-          <FontHeight val="18" />
-          <Color r="1" g="1" b="1" />
-          <Shadow x="2" y="-2">
-            <Color />
-          </Shadow>
-        </FontString>
+				<FontString name="ItemName" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="Select Item">
+					<Size x="200" y="20" />
+					<Anchors>
+						<Anchor x="100" y="-190" point="TOPLEFT" />
+					</Anchors>
+					<FontHeight val="18" />
+					<Color r="1" g="1" b="1" />
+					<Shadow x="2" y="-2">
+						<Color />
+					</Shadow>
+				</FontString>
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="VersionDisplay" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="v0.0.0" justifyV="BOTTOM" justifyH="LEFT">
@@ -105,7 +100,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
-						<FontString name="Instructions" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="Drag an item from your bags to the slot above then click Start Bidding to begin.">
+						<FontString name="Instructions" font="Interface\AddOns\FKPManager\fonts\CuteBeSpecial.otf" text="Drag an item to slot or alt-click an item in bag/chat to start bidding.">
 							<Size x="322" y="99" />
 							<Anchors>
 								<Anchor point="CENTER" />
@@ -269,5 +264,10 @@
 				</Frames>
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad>
+				FKPDialog_OnLoad();
+			</OnLoad>
+		</Scripts>
 	</Frame>
 </Ui>

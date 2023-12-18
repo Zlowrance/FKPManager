@@ -177,13 +177,17 @@ local function RemoveBid(playerName)
 end
 
 local function LayoutBidderList()
+    if #players == 0 then
+        return
+    end
+    local topRoll = players[1].roll
     for i, player in ipairs(players) do
         local button = player.frame
         local yOffset = -button:GetHeight() * (i - 1) - FKPFrameSpacing * i
         button:SetPoint("TOP", contentParent, "TOP", 0, yOffset)
         if fsm:getState() == States.BIDDING_ENDED and player.roll > 0 then
             local playerRoll = GetChildOfFrame(button, "Roll")
-            if i == 1 then
+            if player.roll == topRoll then
                 playerRoll:SetTextColor(1, 1, 0)
             else
                 playerRoll:SetTextColor(1, 1, 1)
@@ -271,7 +275,7 @@ local function SetPlayerRoll(playerName, roll, topEnd)
     local targetTopEnd = GetTopEndRoll(player)
 
     if topEnd ~= targetTopEnd then  
-		SendToRaid(playerName .. " ROLLED OUT OF " .. topEnd .. " INSTEAD OF " .. targetTopEnd .. "!! SHAME!!")
+		SendToPlayer("You must roll 1-" .. targetTopEnd, playerName)
         return
 	end
 
@@ -282,6 +286,22 @@ local function SetPlayerRoll(playerName, roll, topEnd)
     playerRoll:SetText("Rolled " .. roll)
 
     table.sort(players, function(a, b) return a.roll > b.roll end)
+    
+    SendToRaid(playerName .. " rolled " .. roll)
+    
+    -- message new leaders
+    local leader = players[1]
+    local leaders = {}
+    for i = 1, #players do
+        if players[i].roll == leader.roll then
+            table.insert(leaders, players[i].name)
+        end
+    end
+    if #leaders > 1 then
+        SendToRaid("TIE: " .. table.concat(leaders, ", ") .. " are tied for the lead with " .. leader.roll .. "!")
+    else
+        SendToRaid(leader.name .. " is in the lead with " .. leader.roll .. "!")
+    end
     LayoutBidderList()
 end
 
