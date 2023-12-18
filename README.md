@@ -9,7 +9,7 @@ AddOn for managing FKP item bids/rolls.
 
 
 # Bidding Flow
-- Drag item from bags into slot at the top of FKPManager window
+- Alt-Click item or drag from bags into slot at the top of FKPManager window
 - Click BEGIN BIDDING button
 - Users type "bid" in raid chat
 - Once everyones bid is in, click END BIDDING
